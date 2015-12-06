@@ -11,7 +11,7 @@ This has been developed with an "easy prototyping" objective in mind. This means
 About the underlying libraries :
 ================================
 
-The libraries and examples provided build upon the HAL (Hardware Abstraction Layer) drivers provided by ST. This library is intended to control any STM32 in a flexible way at relatively high level and to  maximize portability across the STM32 portfolio. However, it also introduces some overheads that may not be desirable for some applications.
+The libraries and examples provided build upon the HAL (Hardware Abstraction Layer) drivers provided by ST. This library is intended to control all STM32 peripherals in a flexible way at relatively high level and to  maximize portability across the STM32 portfolio. However, it also introduces some overheads that may not be desirable for some applications.
 
 If you would rather use lower-level libraries :
 - one option is to take advantage of ST's recent addition to the HAL: a set of Low Layer APIs (LL) "offering a fast light-weight expert-oriented layer which is closer to the hardware than the HAL" (available for a selected set of peripherals);
@@ -50,8 +50,7 @@ FILE STRUCTURE:
 		   # Rich Graphics Library - from ST under licence from Segger (emWin)
 		-- /Sensor_APIs
 		   # Vendor-provided sensor APIs (with some adaptation) 
-                     Only LSM6DS3 for now. Mostly the .h files are interesting 
-                     (register definitions)
+                     
 
 	-- /projects
 		-- /Project-A
