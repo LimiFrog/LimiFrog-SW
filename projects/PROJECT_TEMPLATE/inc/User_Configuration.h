@@ -98,6 +98,7 @@
 	//	GPIO
 	//	I2C1_SDA
 	//	PWM_TIM4_CH4
+//TODO Also cope with CAN_TX 
 		
     #define 	EXT_PORT_POS10_GPIOtype		NA 
 	// Relevant only if former parameter is GPIO (else: ignored)
@@ -121,6 +122,7 @@
 	//	GPIO
 	//	I2C1_SCL
 	//	PWM_TIM4_CH3
+//TODO Also cope with CAN_RX 
 		
     #define 	EXT_PORT_POS9_GPIOtype  	NA 
 	// Valid values: 
@@ -137,6 +139,7 @@
 	//	UART2_CTS
 	//	UART4_TX
 	//	PWM_TIM2_CH1
+//TODO Also cope with ADC_IN5 
 
     #define 	EXT_PORT_POS8_GPIOtype  	NA
 	// Valid values: 
@@ -153,6 +156,7 @@
 	//	UART2_RTS
 	//	UART4_RX
 	//	PWM_TIM2_CH2
+//TODO Also cope with ADC_IN6 
 
     #define 	EXT_PORT_POS7_GPIOtype  	NA 
 	// Valid values: 
@@ -178,6 +182,7 @@
 	//	UART2_TX
 	//	SPI_MOSI      (over USART2 TX)
 	//	PWM_TIM2_CH3
+//TODO Also cope with ADC_IN7 
 
     #define 	EXT_PORT_POS5_GPIOtype  	NA 
 	// Valid values: 
@@ -194,6 +199,7 @@
 	//	UART2_RX   
 	//	SPI_MISO      (over USART2 RX)
 	//	PWM_TIM2_CH4
+//TODO Also cope with ADC_IN8
 
     #define 	EXT_PORT_POS4_GPIOtype  	NA
 	// Valid values: 
@@ -209,6 +215,7 @@
 	//	GPIO
 	//	SPI_CK      (over USART2 CLK)
 	//	PWM_LPTIM2
+//TODO Also cope with ADC_IN9 and DAC1_OUT1
 
     #define 	EXT_PORT_POS3_GPIOtype  	NA
 	// Valid values: 
