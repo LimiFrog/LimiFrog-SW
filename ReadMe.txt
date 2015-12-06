@@ -3,7 +3,7 @@ README FILE -
 
 This software package is a collection of libraries, example code and documentation to help the user get started with LimiFrog.
 
-This initial package is provided as a first step, knowing that many things could still be added or improved (I'm not -yet- a software expert ;-). It is provided "as is" with no warranty whatsoever (see licensing files).
+This initial package is provided as a first step, knowing that many things could still be added or improved (I'm not -yet- a software expert ;-). 
 
 This has been developed with an "easy prototyping" objective in mind -- possibly trading off performance optimization for ease of use in some places. If you need something more optimized you may either use your own choice of libraries, or perhaps start from this pcakage and rework sections that need optimization for your application.
 
