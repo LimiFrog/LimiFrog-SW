@@ -1,0 +1,81 @@
+/*******************************************************************************
+ * LBF_I2C2_Init.c
+ * 
+ * (c)2015 LimiFrog / CYMEYA
+ * This program is licensed under the terms of the MIT License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+ * Please refer to the License File LICENSE.txt located at the root of this
+ * project for full licensing conditions, 
+ * or visit https://opensource.org/licenses/MIT.
+ ******************************************************************************/
+
+
+
+#include "LBF_lowlev_API.h"
+
+#include "LBF_I2C2_Init.h"
+
+
+I2C_HandleTypeDef hi2c2;  // global variable used by SPI HAL functions 
+
+
+/*******************************************************************************
+ * @brief  : Initialise et configure le peripherique I2C #2
+ * @param  : Aucun.
+ * @return : Rien.
+ ******************************************************************************/
+void LBF_I2C2_Init (void)
+{
+
+/* This is for APB1 = 8 MHZ i.e. I2C block clocked at tI2CCLK = 0.125us*/
+/*
+#define I2C2_PRESC	0x0   // tPRESC = (PRESC+1) x tI2C2CLK  -- 0.125us (8MHz)
+#define I2C2_SCLL  	0x9   // tSCLL = (SCLL+1) x tPRESC  --  1.25us
+#define I2C2_SCLH 	0x3   // tSCLH = (SCLH+1) x tPRESC  --  0.5us
+#define I2C2_SDADEL 	0x1   // tSDADEL = SDADEL x tPRESC  -- 0.125us
+#define I2C2_SCLDEL	0x3   // tSCLDEL = (SCLDEL+1) x tPRESC  -- 0.5us
+// I2C speed: 400KHz,
+//  defined by tSCL = tSCLL + tSCLH + tSYNC1 + tSYNC2 ~ 2.5us  (400KHz)
+//  where tSYNC1 and tSYNC2 are delays introduced by the analog and/or digital noise filters and resync mechasinsms -- refer to Ref Manual I2C section (I2C master mode)
+// SCLDEL defines setup time: SDA stable before SCL rising edge
+// SDADEL defines hold time: SDA stable after SCL *falling* edge (as per I2C spec?)
+*/
+
+// Following settings assume I2C2 core clock (=APB1 clock in Default LimiFrog setting)
+// is 20MHz and target I2C2 speed is 400KHz
+// TODO Find a way to ensure I2C2 clock remains 8MHz if STM32L4 core clock modified
+// TODO Check vs MXCube recommended settings
+
+#define I2C2_PRESC	0x1   // tPRESC = (PRESC+1) x tI2C2CLK  -- 0.1us (10MHz)
+#define I2C2_SCLL  	0xB   // tSCLL = (SCLL+1) x tPRESC  --  1.2us
+#define I2C2_SCLH 	0x4   // tSCLH = (SCLH+1) x tPRESC  --  0.5us
+#define I2C2_SDADEL 	0x2   // tSDADEL = SDADEL x tPRESC  -- 0.2us 
+#define I2C2_SCLDEL	0x4   // tSCLDEL = (SCLDEL+1) x tPRESC  -- 0.5us
+// I2C speed: 400KHz,
+//  defined by tSCL = tSCLL + tSCLH + tSYNC1 + tSYNC2 ~ 2.5us  (400KHz)
+//  where tSYNC1 and tSYNC2 are delays introduced by the analog and/or digital noise filters and resync mechasinsms -- refer to Ref Manual I2C section (I2C master mode)
+// SCLDEL defines setup time: SDA stable before SCL rising edge
+// SDADEL defines hold time: SDA stable after SCL *falling* edge (as per I2C spec?)
+
+
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = ((uint32_t)I2C2_PRESC ) << 28
+		    | ((uint32_t)I2C2_SCLDEL ) << 20
+		    | ((uint32_t)I2C2_SDADEL ) << 16
+		    | ((uint32_t)I2C2_SCLH ) << 8
+		    | ((uint32_t)I2C2_SCLL )  ;
+      //Contents of the I2C_TIMINGR_register value
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED; 
+  HAL_I2C_Init(&hi2c2);
+
+
+}
+
+
+
+/***************************************************************END OF FILE****/

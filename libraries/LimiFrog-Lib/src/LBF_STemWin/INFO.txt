@@ -1,0 +1,2 @@
+File Copied_GUI_X.c is required because it contains GUI_X_Init() which despite doing nothing is called by the emWin library.
+Original file is GUI_X.c, supplied in directory OS of the original STemWin middleware package. This file therefore contains stuff (GUI_X_Init()) which is called even when no OS is used !

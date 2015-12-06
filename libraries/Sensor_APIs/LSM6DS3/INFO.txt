@@ -1,0 +1,6 @@
+These files are derived from ST's drivers for the 6-axis inertial units LSM6DS0 and LSM6DS3 found in package:
+
+   "x-cube-mems1", 
+
+available on st.com : www.st.com/st-web-ui/active/en/catalog/tools/PF261412
+

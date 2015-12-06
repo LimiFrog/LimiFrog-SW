@@ -1,0 +1,49 @@
+/*******************************************************************************
+ * LBF_LSE_RTC_Cfg.c
+ * 
+ * (c)2015 LimiFrog / CYMEYA
+ * This program is licensed under the terms of the MIT License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+ * Please refer to the License File LICENSE.txt located at the root of this
+ * project for full licensing conditions, 
+ * or visit https://opensource.org/licenses/MIT.
+ ******************************************************************************/
+
+
+
+
+#include "LBF_LSE_RTC_Cfg.h"
+#include "LBF_lowlev_API.h"
+
+/* Privates prototypes -------------------------------------------------------*/
+
+
+/* Functions -----------------------------------------------------------------*/
+
+
+/*******************************************************************************/
+
+
+void LBF_LSE_RTC_Cfg(void)
+{
+RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+
+  // Enable LSE Oscillator 
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON; 
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) 
+  { 
+    // Error_Handler();
+  }
+
+  // RTC Clock Inits
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
+
+}
+
+
+
+/***************************************************************END OF FILE****/
