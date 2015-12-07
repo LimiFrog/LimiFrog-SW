@@ -1,0 +1,193 @@
+0-
+==========================================
+LimiFrog-BringUp-0/BriefDesc.txt
+=====================
+BASIC LED and SWITCH UNITARY TEST
+=================================
+
+Initialize Board
+
+Switch 2 makes LED constantly ON
+Switch 1 makes LED blinking
+
+
+
+
+1-
+==========================================
+LimiFrog-BringUp-1/BriefDesc.txt
+=====================
+BASIC DATA FLASH UNITARY TEST
+=============================
+
+- Check Manufacturer ID of Adesto Data Flash
+
+- Write some random data into Flash, read back, wrte back complement, read back and check integrity of results
+
+- Similar test for an unaligned start write address and a buffer smaller than one Flash page
+
+- Get LED to blink if success, stay fixed if failure
+
+
+2-
+==========================================
+LimiFrog-BringUp-2/BriefDesc.txt
+=====================
+BASIC OLED UNITARY TEST
+========================
+
+- Configure Board
+- Initialize OLED
+
+- After blue splash screen, switch 1 selects a uniform screen (cyan) while switch 2 selects a mosaic of rectangles;
+  Position of each color in the mosaic rolls as long as switch 2 is maintained in pressed position 
+
+
+3-
+==========================================
+LimiFrog-BringUp-3/BriefDesc.txt
+=====================
+Clock Frequencies & USB Device Test (Mass Storage)
+=================================================
+
+Initialize board
+
+Configure board as Mass Storage Device (8MB)
+USB Device Stack runs on STM32, Physical Storage space is Data Flash
+
+LimiFrog gets recognized by PC as USB Mass Storage drive.
+
+LimiFrog turns LED on if USB line D+ is pulled high (meaning the STM32
+is signalling itself as a USB device to the Host)
++ pressing push-button Switch1 toggles the LED as long as it remains pressed.
+
+
+**Limitation**: if Flash is not empty and not FAT formatted, PC OS reports abnormal disk behavior.
+
+If Flash is empty/erased, then PC proposes to format the drive (FAT16)
+Note Flash can also be formatted by running demo "LimiFrog-FatFS-Format".
+
+
+
+4-
+==========================================
+LimiFrog-BringUp-4/BriefDesc.txt
+=====================
+BASIC FatFS EXAMPLE -- using DataFlash as logical Disk
+========================================================
+
+
+** NOTE **:
+LimiFrog must have been formatted as FAT file system first !
+for example by plugging into Windows PC while USB firmware is running (if Flash is empty PC will offer to format disk)
+or by running demo project "LimiFrog_FatFS-Format"
+**********
+
+Initialize Board
+Launch USB so files can be checked from PC 
+
+Open (create) a file FATFS.txt
+Write a string in it
+Close File
+
+Open same file
+Read String
+Close file
+
+Check that written and read back string have same length
+Get LED to blink if success, else stay fixed
+
+
+
+5-
+==========================================
+LimiFrog-BringUp-5/BriefDesc.txt
+=====================
+Test I2C access to all sensors
+==============================
+
+Initialize Board
+
+Check I2C access to all sensors is OK 
+and reported WHO_AM_I register value is correct.
+
+Display result using "OLED_Printxxx" functions
+
+
+
+6-
+==========================================
+LimiFrog-BringUp-6/BriefDesc.txt
+=====================
+VL6180X (Ambient Light + Proximity / Distance Sensor) Demo
+==========================================================
+
+Initialize Board
+Check Access to VL60180X OK
+
+Continuously monitor distance to any object placed in front of VL6180X
+Display result as a colored bar of height proportional to measured distance
+
+
+
+7-
+==========================================
+LimiFrog-BringUp-7/BriefDesc.txt
+=====================
+BlueTooth Low Energy Test
+==========================
+
+Initialize Module, Enable USB
+With BTLE enabled in user configuration file,
+ LBF_Board_Selective_Inits() will include download by STM32 of specified executable into BTLE module.
+
+Upon pressing switch 1 (side-push button), La BLueFrog sends a text message over BTLE.
+This can be read on ad-hoc iOS or Android application.
+
+
+// ---- Pre-requisites :
+// BTLE must be enabled by #define in User_Configuration.h
+// Name of the file containing code to download by STM32 
+// into BTLE module also defined there -- download occurs
+// during LBF_Board_Selective_Inits() phase.
+// This executable must be present on FAT File System on Flash 
+// (typically stored there from PC through USB).
+// In this demo, code is supposed to be Serial Port Service
+// snippet provided by Dialog -- this configures the BTLE
+// to behave as UART cable replacement. Data sent to
+// BTLE module over UART1 at 115200 baud is transitted over BTLE
+// This data can be received by DSPS application running in iOS
+// or Android, provided by Dialog, available on Appple/Android
+// app stores
+// --------------------------------------------------------
+
+
+
+8-
+
+
+9-
+==========================================
+LimiFrog-BringUp-9/BriefDesc.txt
+=====================
+TIMERS AND PWM
+===============
+
+Part 1: Free running timer 
+
+Based on timer3 counter monitoring,
+Flash LED every 0.5s, 8 times, using timer with 1ms resolution.
+Short pause.
+Do it again using timer with 1us resolution (same result !)
+
+
+Part 2: Timer with IT generation.
+
+Set up timer4 to elapse and generate IT after 30ms.
+In Interrupt Servic Routine, toggle LED.
+Let it run for 2 sec.
+During these 2 sec: LED is blinking, toggling every 30ms
+
+
+
+

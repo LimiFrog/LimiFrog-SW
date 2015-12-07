@@ -6,4 +6,4 @@ Initialize Board
 Switch 2 makes LED constantly ON
 Switch 1 makes LED blinking
 
-(note: delay function makes use of TimerTick interrupt)
+
