@@ -3,9 +3,9 @@ README FILE -
 
 This software package is a collection of libraries, example code and documentation to help the user get started with LimiFrog.
 
-This initial package is provided as a first step, knowing that many things could still be added or improved (I'm not -yet- a software expert ;-). 
+This initial package is provided as a first step (seasoned developers will probably identify things to improve).
 
-This has been developed with an "easy prototyping" objective in mind -- possibly trading off performance optimization for ease of use in some places. If you need something more optimized you may either use your own choice of libraries, or perhaps start from this pcakage and rework sections that need optimization for your application.
+This has been developed with a "prototyping" objective in mind -- possibly trading off performance optimization for ease of use in some places. If you need something more optimized you may either use your own choice of libraries, or perhaps start from this pcakage and rework sections that need optimization for your application.
 
 
 About the underlying libraries :
@@ -37,13 +37,13 @@ FILE STRUCTURE:
 		-- /LimiFrog-Lib
 		   # Board init and controls  -  LimiFrog specific
 		   # Adaptation Layers for Middlewares (USBD, FatFS, emWin)
-		-- /CMSIS
+		-- /CMSIS_L4xx
 		   # ARM Cortex-M4 libs  -  supplied by ARM/ST
 		-- /STM32L4xx_HAL_Driver
 		   # Hardware Abstraction Layer for config of STM32 on-chip periphs 
 		   # Supplied by ST as part of "STM32 C
-		-- /STM32_USB-Device_Library
-		   # USB2.0 (full speed) device driver -from ST
+		-- /STM32L4_USB_Device_Library
+		   # USB2.0 (full speed drivers -from ST
 		-- /FatFS_Lib
 		   # FAT File System  - from ST, derived from ChaN's open-source FatFS
 		-- /STemWin_Lib
