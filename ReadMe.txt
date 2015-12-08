@@ -5,7 +5,7 @@ This software package is a collection of libraries, example code and documentati
 
 This initial package is provided as a first step (seasoned developers will probably identify things to improve).
 
-This has been developed with a "prototyping" objective in mind -- possibly trading off performance optimization for ease of use in some places. If you need something more optimized you may either use your own choice of libraries, or perhaps start from this pcakage and rework sections that need optimization for your application.
+This has been developed with a "prototyping" objective in mind -- possibly trading off performance optimization for ease of use in some places. If you need something more optimized you may either use your own choice of libraries, or perhaps start from this package and rework sections that need optimization for your application.
 
 
 About the underlying libraries :
