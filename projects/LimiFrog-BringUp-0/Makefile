@@ -4,6 +4,14 @@
 # 
 ################################################################################
 
+ifeq ($(OS), Windows_NT)  
+# true for any Windows OS
+  UNAME := Windows
+else
+  UNAME := $(shell uname -s)
+endif
+
+
 # Name of executable
 TARGET          = inframod
 
@@ -159,10 +167,17 @@ TARGET_LST = $(OBJ_DIR)/$(TARGET).lst
 TARGET_ELF = $(OBJ_DIR)/$(TARGET).elf
 TARGET_OBJ = $(addsuffix .o,$(addprefix $(OBJ_DIR)/,$(basename $(SOURCES))))
 
-#-------------------------------------------------------------------------------
-all:  build run size
+#-------------------------------------------------------------------------------#
 
-build: $(TARGET_BIN) $(TARGET_HEX) $(TARGET_LST)
+ifneq ($(UNAME), Windows)
+ all:  build run size
+endif
+
+ifeq ($(UNAME), Windows) 
+  all: $(TARGET_BIN) $(TARGET_HEX) $(TARGET_LST)
+else
+  build: $(TARGET_BIN) $(TARGET_HEX) $(TARGET_LST)
+endif
 
 $(TARGET_BIN): $(TARGET_ELF)
 	@echo "-> "$(notdir $@)""
@@ -182,17 +197,29 @@ $(TARGET_ELF): $(TARGET_OBJ)
 	@$(CC)  $(LDFLAGS) -o  $@  $^ $(LIBS)
 
 $(OBJ_DIR)/%.o: %.c
+ifeq ($(UNAME), Windows) 
+#	@mkdir $(dir $@)  /* Option -p inexistent in Windows, covered by default */
+else
 	@mkdir -p $(dir $@)
+endif
 	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.o: %.cpp
+ifeq ($(UNAME), Windows) 
+#	@mkdir $(dir $@)  /* Option -p inexistent in Windows, covered by default */
+else
 	@mkdir -p $(dir $@)
+endif
 	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(CFLAGS) -c -o $@ $<  
 
 $(OBJ_DIR)/%.o: %.s
+ifeq ($(UNAME), Windows) 
+#	@mkdir $(dir $@)  /* Option -p inexistent in Windows, covered by default */
+else
 	@mkdir -p $(dir $@)
+endif
 	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(ASFLAGS) -c -o $@ $<
 
@@ -210,7 +237,11 @@ clean:
 	@rm -vf $(TARGET_HEX)
 	@rm -vf $(TARGET_LST)
 	@rm -vf $(TARGET_ELF)
+ifeq ($(UNAME), Windows) 
+	@rm -vf $(OBJ_DIR)/*.o
+else	
 	@rm -vf $(SRC_DIR)/*~
+endif
 
 purge:
 	@echo -e "\033[01;41m-> SUPRESSION !!\033[m"
