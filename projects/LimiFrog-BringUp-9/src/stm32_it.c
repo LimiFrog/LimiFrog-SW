@@ -248,6 +248,22 @@ void OTG_FS_IRQHandler(void)
 }
 
 
+/******************************************************************************
+* Function Name  : TIM4_IRQHandler
+* Description    : TIM4 global interrupt
+*******************************************************************************/
+void TIM4_IRQHandler(void)
+{
+      HAL_TIM_IRQHandler( &htim4 ); 
+}
+    // Note:   functions HAL_TIM_IRQHandler( &htim ) called below check if
+     //  indicated htim is source of IRQ
+     // If so, finds out due to what event and, accordingly, calls one of the following :
+     // HAL_TIM_IC_CaptureCallback(htim)
+     // HAL_TIM_OC_DelayElapsedCallback(htim) and HAL_TIM_PWM_PulseFinishedCallback(htim) 
+     // HAL_TIM_PeriodElapsedCallback(htim)
+     // HAL_TIM_TriggerCallback(htim)
+     // Also clears the IT flag
 
 
 /****************************************************************************
@@ -264,10 +280,18 @@ void OTG_FS_IRQHandler(void)
 /**===========================================================================*/
 
 
-// void HAL_xxxxCallback(xxxx)
-// {
-//   <your code here>
-// }
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  // Code to execute when Timer Fires whichever timer it is:
+  // .... none
+
+  // Code to execute depending on which timer fired
+  if( htim->Instance == TIM4 ) 
+  {
+	LBF_Led_TOGGLE();
+  }
+
+}
 
 
 

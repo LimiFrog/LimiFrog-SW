@@ -77,11 +77,7 @@ bool  Success = TRUE;
 uint32_t	CurrentTime_ms, CurrentTime_us ;
 uint8_t		i;
 
-/*
-const uint16_t  Period = 200; //200ms pwm period
-uint16_t	Pulse_Selection[4] = {20, 40, 80, 160};  // 0.2, 0.4, 0.8 or 1.6ms high pulse
-uint8_t		PulseIndex = 0;
-*/
+
 
 /* ==  Body     ======================================== */
 
@@ -156,20 +152,24 @@ uint8_t		PulseIndex = 0;
     //End Of Free Running Timer Demo
 
 
+    // ===  Pause       =============================================
+    HAL_TIM_Base_Stop(&htim2);
+    LBF_Delay_ms(1000);
+
 
 
     // *** Timer-based interrupt generation demo section ************
 
-    LBF_Timer_Setup( TIMER4, TIMER_UNIT_MS, 30);  //Configure Timer4 for 1ms prescaled clock, 30ms period
+    LBF_Timer_Setup( TIMER4, TIMER_UNIT_MS, 500);  //Configure Timer4 for 1ms prescaled clock, 0.5s period
 
 
-   // Set timer4 to fire IT when elapsed (so, every 30ms)
-   // Then wait for 2sec.
+   // Set timer4 to fire IT when elapsed (so, every 0.5ms)
+   // Then wait for 5sec.
    // Series of IT fire while waiting, in IT handler (cf stm32_it.c) LED gets toggled
-   // => Should see LED blinking fast during these 2 seconds
+   // => Should see LED blinking at 1Hz during these 5 seconds
    //
     LBF_Timer_Start_ITout( TIMER4 );  //Start Timer4 with IT generation
-    LBF_Delay_ms(2000);  // ITs are firing during this time
+    LBF_Delay_ms(5000);  // ITs are firing during this time
 
     LBF_Timer_Stop( TIMER4 );  //Now stop Timer4 
 
@@ -222,7 +222,8 @@ uint8_t		PulseIndex = 0;
     }  // end while(1)
 */
 
-return 0;
+    while(1);
+
 }
 
 
