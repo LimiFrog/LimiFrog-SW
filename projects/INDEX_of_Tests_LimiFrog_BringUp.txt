@@ -47,8 +47,8 @@ BASIC OLED UNITARY TEST
 ==========================================
 LimiFrog-BringUp-3/BriefDesc.txt
 =====================
-Clock Frequencies & USB Device Test (Mass Storage)
-=================================================
+USB Device Test (Mass Storage)
+==============================
 
 Initialize board
 
@@ -183,10 +183,14 @@ Do it again using timer with 1us resolution (same result !)
 
 Part 2: Timer with IT generation.
 
-Set up timer4 to elapse and generate IT after 30ms.
+Set up timer4 to elapse and generate IT after 0.5s.
 In Interrupt Servic Routine, toggle LED.
-Let it run for 2 sec.
-During these 2 sec: LED is blinking, toggling every 30ms
+Let it run for 5 sec.
+During these 5 sec: LED is blinking, toggling every 500ms (period = 1Hz)
+
+Then keep LED steadily on
+
+
 
 
 
