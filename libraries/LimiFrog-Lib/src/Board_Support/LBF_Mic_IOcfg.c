@@ -1,5 +1,5 @@
 /*******************************************************************************
- * LBF_BATT_IOcfg.c
+ * LBF_Mic_IOcfg.c
  * 
  * (c)2015 LimiFrog / CYMEYA
  * This program is licensed under the terms of the MIT License.
@@ -13,7 +13,7 @@
 
 #include "LBF_lowlev_API.h"
 
-#include "LBF_BATT_IOcfg.h"
+#include "LBF_Mic_IOcfg.h"
 
 
 /* Privates prototypes -------------------------------------------------------*/
@@ -25,29 +25,17 @@
  * @param  : None.
  * @return : None.
  ******************************************************************************/
-void LBF_BATT_IOcfg(void)
+void LBF_Mic_IOcfg(void)
 {
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-// PC7 = BATT_MEAS_ENB (active low)
-// Open-drain output, no pull-up/-down resistor, low speed
-  GPIO_InitStruct.Pin = BATT_MEAS_ENB_PIN;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL; 
-  GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(BATT_PORT, &GPIO_InitStruct); 
-
-// PC1 = BATT_ADC_MEAS_PIN
+// PBO = MIC_ANA
 // Analog ADC input, no pull-up/-down resistor
-  GPIO_InitStruct.Pin = BATT_ADC_MEAS_PIN;
+  GPIO_InitStruct.Pin = MIC_ANA_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL; 
-	// !!!! Not just "GPIO_MODE_ANALOG" (as on L1) else wrong ADC results
   GPIO_InitStruct.Pull = GPIO_NOPULL; 
-  HAL_GPIO_Init(BATT_PORT, &GPIO_InitStruct); 
-
-// Initialise measurement enable pin in high (inactive) state 
-  GPIO_HIGH(BATT_PORT, BATT_MEAS_ENB_PIN );
+  HAL_GPIO_Init(MIC_ANA_PORT, &GPIO_InitStruct); 
 
 }
 

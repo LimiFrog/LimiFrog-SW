@@ -41,6 +41,8 @@
 
 #include "LBF_BATT_IOcfg.h"
 
+#include "LBF_MIC_IOcfg.h"
+
 #include "LBF_FLASH_IOcfg.h"
 #include "LBF_FLASH_Init.h"
 
@@ -96,13 +98,7 @@ void LBF_Board_Fixed_Inits(void)
 
      LBF_PWR_IOcfg();  		// GPIO <--> PMIC IO interfacing
 
-
      LBF_SPI3_IOcfg();   	// SPI3 - interfacing with: Data Flash
-
-
-//     LBF_USART2_IOcfg();   	// USART2 - back-up interfacing with: OLED 
-// Option dropped
-
 
      LBF_SPI1_IOcfg();		// SPI1 - interface to OLED
 
@@ -112,30 +108,25 @@ void LBF_Board_Fixed_Inits(void)
      LBF_UART3_IOcfg();		// UART3 -interfacing with: BTLE
 #endif
 
-
      LBF_BATT_IOcfg();   	// GPIO <--> Battery VBat: measurement enable and analog voltage pins
 
+     LBF_MIC_IOcfg();   	// GPIO <--> Microphone IO interfacing
 
      LBF_LED_IOcfg();  		// GPIO <--> LED IO interfacing
 
-
      LBF_SelSwitches_IOcfg();   // GPIO <--> Selection switches (push-button) IO interfacing
-
 
      LBF_I2C2_IOcfg();   	// I2C2 - interfacing with: all sensors 
 
-
      LBF_FLASH_IOcfg();  	// GPIO <--> Data Flash IO interfacing (SPI3 done separately)
-
 
      LBF_OLED_IOcfg();          // GPIO <--> OLED IO interfacing
 				// SPI1 done separately
 
-
      LBF_BTLE_IOcfg();  	// BlueTooth Low-Energy IO interfacing (UART3 done separately)
 
-
      LBF_USB_IOcfg();		// USB IO interfacing (DP/DM and VBUS_SENSE)
+
 
 
 /* -------- On-Chip Peripheral Inits  -----------------------  */  
