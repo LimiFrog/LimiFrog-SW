@@ -41,7 +41,7 @@
 
 #include "LBF_BATT_IOcfg.h"
 
-#include "LBF_MIC_IOcfg.h"
+#include "LBF_Mic_IOcfg.h"
 
 #include "LBF_FLASH_IOcfg.h"
 #include "LBF_FLASH_Init.h"
@@ -110,7 +110,7 @@ void LBF_Board_Fixed_Inits(void)
 
      LBF_BATT_IOcfg();   	// GPIO <--> Battery VBat: measurement enable and analog voltage pins
 
-     LBF_MIC_IOcfg();   	// GPIO <--> Microphone IO interfacing
+     LBF_Mic_IOcfg();   	// GPIO <--> Microphone IO interfacing
 
      LBF_LED_IOcfg();  		// GPIO <--> LED IO interfacing
 
