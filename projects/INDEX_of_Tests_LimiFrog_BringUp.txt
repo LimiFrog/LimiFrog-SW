@@ -191,7 +191,35 @@ During these 5 sec: LED is blinking, toggling every 500ms (period = 1Hz)
 Then keep LED steadily on
 
 
+10-
+==========================================
+LimiFrog-BringUp-9/BriefDesc.txt
+MICROPHONE and ADC TEST
+========================
+
+Initialize Board
+
+Set Up ADC#2 to capture Microphone analog output on channel 15.
+Set up basic Timer6 at 20KHz as trigger for ADC sampling.
+Set up analog watchdog to detect ADC input goes outside a target window.
+
+When noise level exceeds a certain level, analog watchdog detect it and sets a f
+lag (could also fire IT but not used here).
+
+Color of screen is toggled upon detection of this flag.
+Demo by e.g  clapping hands near LimiFrog.
 
 
+11-
+==========================================
+BATTERY LEVEL MEASUREMENT TEST
+==============================
 
+Initialize Board
+
+Set up ADC #3 to capture battery voltage on channel 2 in single shot mode.
+Set up basic Timer6 to generate IT every 1ms.
+
+When Timer IT fires, enable voltage divider on Vbat and measure resulting voltage through ADC.
+Display result. 
 
