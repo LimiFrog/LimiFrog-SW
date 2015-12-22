@@ -137,6 +137,7 @@
 	//	UART2_CTS
 	//	UART4_TX
 	//	PWM_TIM2_CH1
+	//	ADC12_IN_5
 
     #define 	EXT_PORT_POS8_GPIOtype  	NA
 	// Valid values: 
@@ -153,6 +154,7 @@
 	//	UART2_RTS
 	//	UART4_RX
 	//	PWM_TIM2_CH2
+	//	ADC12_IN_6
 
     #define 	EXT_PORT_POS7_GPIOtype  	NA 
 	// Valid values: 
@@ -178,6 +180,7 @@
 	//	UART2_TX
 	//	SPI_MOSI      (over USART2 TX)
 	//	PWM_TIM2_CH3
+	//	ADC12_IN_7
 
     #define 	EXT_PORT_POS5_GPIOtype  	NA 
 	// Valid values: 
@@ -194,6 +197,7 @@
 	//	UART2_RX   
 	//	SPI_MISO      (over USART2 RX)
 	//	PWM_TIM2_CH4
+	//	ADC12_IN_8
 
     #define 	EXT_PORT_POS4_GPIOtype  	NA
 	// Valid values: 
@@ -209,6 +213,7 @@
 	//	GPIO
 	//	SPI_CK      (over USART2 CLK)
 	//	PWM_LPTIM2
+	//	ADC12_IN_9
 
     #define 	EXT_PORT_POS3_GPIOtype  	NA
 	// Valid values: 

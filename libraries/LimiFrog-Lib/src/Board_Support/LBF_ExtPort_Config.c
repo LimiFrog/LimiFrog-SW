@@ -30,9 +30,9 @@ static void LBF_ExtPortPreset_UART2 (LBF_ExtPortConfig_t* pExtPortConfig);
 static void LBF_ExtPortPreset_UART4 (LBF_ExtPortConfig_t* pExtPortConfig);
 static void LBF_ExtPortPreset_GPIO (LBF_ExtPortConfig_t* pExtPortConfig);
 static void LBF_ExtPortPreset_PWMout (LBF_ExtPortConfig_t* pExtPortConfig);
+static void LBF_ExtPortPreset_ADC (LBF_ExtPortConfig_t* pExtPortConfig);
 
 static void LBF_ExtPortPreset_CAN (LBF_ExtPortConfig_t* pExtPortConfig);
-static void LBF_ExtPortPreset_ADC (LBF_ExtPortConfig_t* pExtPortConfig);
 static void LBF_ExtPortPreset_DAC (LBF_ExtPortConfig_t* pExtPortConfig);
 
 
@@ -51,15 +51,22 @@ LBF_ExtPortConfig_t* pExtPortConfig = &ExtPortConfig;
 	    // start with VCC_LDO in case system connected to extension port
 	    // should get VCC before getting a voltage on its input pins
 
+	// Here IOs are configured and peripheral is initialized
+        // (with some default behavior, user to override if needed)
 	LBF_ExtPortPreset_I2C1( pExtPortConfig );
 	LBF_ExtPortPreset_SPIoverUSART2( pExtPortConfig );
 	LBF_ExtPortPreset_UART4( pExtPortConfig );
 	LBF_ExtPortPreset_UART2( pExtPortConfig );
-	LBF_ExtPortPreset_GPIO( pExtPortConfig );
-	LBF_ExtPortPreset_PWMout( pExtPortConfig );
 
-	LBF_ExtPortPreset_CAN ( pExtPortConfig );
+
+	// Here IOs are configured 
+	// but peripheral initialization is left to user
+	LBF_ExtPortPreset_PWMout( pExtPortConfig );
 	LBF_ExtPortPreset_ADC ( pExtPortConfig );
+	LBF_ExtPortPreset_GPIO( pExtPortConfig ); // configure NVIC if used as ExtIT
+
+	//TODO
+	LBF_ExtPortPreset_CAN ( pExtPortConfig );
 	LBF_ExtPortPreset_DAC ( pExtPortConfig );
 
 }
@@ -648,6 +655,63 @@ GPIO_InitTypeDef GPIO_InitStruct;
 
 
 /*******************************************************************************
+* Function: LBF_ExtPortPreset_ADC
+* Description  : 
+* Input          : tbd
+* Return         : None.
+*******************************************************************************/
+
+void LBF_ExtPortPreset_ADC ( LBF_ExtPortConfig_t* pExtPortConfig )
+{
+GPIO_InitTypeDef GPIO_InitStruct;
+
+    // Note - only the set up of GPIOs for use as ADC input is done here
+    // ADC peripheral setup, including ADC clock selection and setup,
+    // must be done by the application
+
+
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL; 
+	// !!!! Not just "GPIO_MODE_ANALOG" (as on L1) else wrong ADC results
+    GPIO_InitStruct.Pull = GPIO_NOPULL; 
+
+    // Position 8 
+    if (pExtPortConfig->Pos8.Function == ADC12_IN_5)
+    {
+	GPIO_InitStruct.Pin = CONN_POS8_PIN;
+	HAL_GPIO_Init(CONN_POS8_PORT, &GPIO_InitStruct); 
+    }
+ 
+    // Position 7 
+    if (pExtPortConfig->Pos7.Function == ADC12_IN_6)
+    {
+	GPIO_InitStruct.Pin = CONN_POS7_PIN;
+	HAL_GPIO_Init(CONN_POS7_PORT, &GPIO_InitStruct); 
+    }
+
+    // Position 5 
+    if (pExtPortConfig->Pos5.Function == ADC12_IN_7)
+    {
+	GPIO_InitStruct.Pin = CONN_POS5_PIN;
+	HAL_GPIO_Init(CONN_POS5_PORT, &GPIO_InitStruct); 
+    }
+    // Position 4 
+    if (pExtPortConfig->Pos4.Function == ADC12_IN_8)
+    {
+	GPIO_InitStruct.Pin = CONN_POS4_PIN;
+	HAL_GPIO_Init(CONN_POS4_PORT, &GPIO_InitStruct); 
+    }
+    // Position 3 
+    if (pExtPortConfig->Pos3.Function == ADC12_IN_9)
+    {
+	GPIO_InitStruct.Pin = CONN_POS3_PIN;
+	HAL_GPIO_Init(CONN_POS3_PORT, &GPIO_InitStruct); 
+    }
+
+}
+
+
+
+/*******************************************************************************
 * Function: LBF_ExtPortPreset_CAN
 * Description  : Configures relevant GPIOs to be used as CAN bus on Extension Port
 * 		  and initializes CAN in a pre-defined configuration
@@ -659,22 +723,6 @@ void LBF_ExtPortPreset_CAN (LBF_ExtPortConfig_t* pExtPortConfig )
 {
 	//TODO
 }
-
-
-
-
-/*******************************************************************************
-* Function: LBF_ExtPortPreset_ADC
-* Description  : 
-* Input          : tbd
-* Return         : None.
-*******************************************************************************/
-
-void LBF_ExtPortPreset_ADC ( LBF_ExtPortConfig_t* pExtPortConfig )
-{
-	//TODO
-}
-
 
 
 /*******************************************************************************

@@ -135,7 +135,9 @@ CFLAGS = \
 	-D$(DEBUGGER) \
 	-fno-exceptions \
 	-Wno-write-strings
-# ADD -D__LEGACY if needed to cope with boards prior to LimiFrog0.1
+# Add -D__LEGACY if needed to cope with boards prior to LimiFrog0.1
+# !!! DEBUGGING: Add -g or -ggdb flag to produce debugging information 
+# in particular to allow seeing source code in the debugger 
 
 LDFLAGS = \
 	$(ARCH_FLAGS) \
@@ -192,7 +194,7 @@ $(TARGET_LST): $(TARGET_ELF)
 	@$(OD) -S $< > $@
 
 $(TARGET_ELF): $(TARGET_OBJ)
-	@echo -e "\033[01;33m==========  GENERATION  ====================================\033[m"
+	@echo "\033[01;33m==========  GENERATION  ====================================\033[m"
 	@echo "-> "$(notdir $@)""
 	@$(CC)  $(LDFLAGS) -o  $@  $^ $(LIBS)
 
@@ -202,7 +204,7 @@ ifeq ($(UNAME), Windows)
 else
 	@mkdir -p $(dir $@)
 endif
-	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
+	@echo "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.o: %.cpp
@@ -211,7 +213,7 @@ ifeq ($(UNAME), Windows)
 else
 	@mkdir -p $(dir $@)
 endif
-	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
+	@echo "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(CFLAGS) -c -o $@ $<  
 
 $(OBJ_DIR)/%.o: %.s
@@ -220,19 +222,19 @@ ifeq ($(UNAME), Windows)
 else
 	@mkdir -p $(dir $@)
 endif
-	@echo -e "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
+	@echo "\033[01;42m-> COMPILE:\033[m "$(notdir $<)
 	@$(CC) $(ASFLAGS) -c -o $@ $<
 
 run: $(TARGET_BIN)
-	@echo -e "\033[01;33m==========  PROGRAMMATION  =================================\033[m"
+	@echo "\033[01;33m==========  PROGRAMMATION  =================================\033[m"
 	@st-flash write $< 0x8000000
 
 size: $(TARGET_ELF)
-	@echo -e "\033[01;33m==========  TAILLE  ========================================\033[m"
+	@echo "\033[01;33m==========  TAILLE  ========================================\033[m"
 	@$(SIZE) $<
 
 clean:
-	@echo -e "\033[01;41m-> SUPRESSION !\033[m"
+	@echo "\033[01;41m-> SUPRESSION !\033[m"
 	@rm -vf $(TARGET_BIN)
 	@rm -vf $(TARGET_HEX)
 	@rm -vf $(TARGET_LST)
@@ -244,7 +246,7 @@ else
 endif
 
 purge:
-	@echo -e "\033[01;41m-> SUPRESSION !!\033[m"
+	@echo "\033[01;41m-> SUPRESSION !!\033[m"
 	@rm -vRf $(OBJ_DIR)
 
 

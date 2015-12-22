@@ -10,7 +10,6 @@
  * or visit https://opensource.org/licenses/MIT.
  ******************************************************************************/
 
-
 #include "LBF_Global.h"
 #include "LBF_User_Conf.h"
 #include "User_Configuration.h"  //configuration file in user's project
@@ -18,8 +17,8 @@
 
 /*******************************************************************************
 * Function Name  : User_Config
-* Description    : User-edited routine to configure the extension port and
-		   select board configuration option (without/with OLED/BLE).
+* Description    : Populate configuration structure according to user's
+*                  directives (found in User_Configuration.h)
 * Input Param    : None.
 * Output Param   : pExtPortConfig - pointer to structure that will hold the user-
 		     defined parameters to configure the extension port
@@ -29,14 +28,6 @@
 
 void LBF_User_Conf( LBF_ExtPortConfig_t* pExtPortConfig )
 {
-
-    /******************************************************************
-    * Now Populate configuration structure with values defined above
-    * Done this way for better legibility of above section
-    *
-    * No need for user to configure anything below this line
-    * 
-    ******************************************************************/
     
     pExtPortConfig->UART2_SPI_Baudrate =  EXT_PORT_UART2_SPI_Baudrate;
     pExtPortConfig->UART4_Baudrate =  EXT_PORT_UART4_Baudrate;	   
