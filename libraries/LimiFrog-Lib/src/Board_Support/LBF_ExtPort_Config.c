@@ -127,7 +127,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
     	if (pExtPortConfig->Pos9.Function == I2C1_SCL)  
           //multi-master not supported, no need for Open-drain SCL
 	{
-   	    GPIO_InitStruct.Pin |= CONN_POS9_PIN;
+   	    GPIO_InitStruct.Pin = CONN_POS9_PIN;
 	    GPIO_InitStruct.Pull = GPIO_NOPULL; 
 	    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD; 
     	    HAL_GPIO_Init(CONN_POS9_PORT, &GPIO_InitStruct);
