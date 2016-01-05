@@ -32,6 +32,7 @@ void LBF_User_Conf( LBF_ExtPortConfig_t* pExtPortConfig )
     pExtPortConfig->UART2_SPI_Baudrate =  EXT_PORT_UART2_SPI_Baudrate;
     pExtPortConfig->UART4_Baudrate =  EXT_PORT_UART4_Baudrate;	   
 
+    // Position 1 is GND
 
     pExtPortConfig->Pos10.Function = EXT_PORT_POS10_Function;  
     pExtPortConfig->Pos10.GPIO_Conf = EXT_PORT_POS10_GPIOtype;
@@ -59,7 +60,8 @@ void LBF_User_Conf( LBF_ExtPortConfig_t* pExtPortConfig )
 
     // Position 2 dedicated to MIC monitoring
 
-    // Position 1 is GND
+    pExtPortConfig->Pos1.Function = EXT_PORT_POS1_Function;  
+    pExtPortConfig->Pos1.GPIO_Conf = EXT_PORT_POS1_GPIOtype;
 }
 
 
