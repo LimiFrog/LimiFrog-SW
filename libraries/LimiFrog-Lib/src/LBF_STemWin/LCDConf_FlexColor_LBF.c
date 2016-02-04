@@ -1,5 +1,7 @@
 /*********************************************************************
+*
 * Customized by LimiFrog/CYMEYA, 2015
+*
 */
 /*********************************************************************
 *          Portions COPYRIGHT 2014 STMicroelectronics                *
@@ -59,6 +61,9 @@ Purpose     : Display controller configuration (single layer)
 
 #include "LBF_lowlev_API.h"
 
+// To use low-level STM32L4 periph drivers 
+#include "stm32l4xx_ll_spi.h"
+
 /*********************************************************************
 *
 *       Layer configuration (to be modified)
@@ -101,67 +106,115 @@ Purpose     : Display controller configuration (single layer)
 *
 *       Local functions
 *
-**********************************************************************
-*/
-/********************************************************************
-*
-*       LcdSendCmd
-*
-* Function description:
-*   Sets display register (i.e. send register index to display controller)
-*/
-static void LcdSendCmd(U8 Data) 
-{
-    LBF_OLED_SendCmd( (uint8_t)(Data) );
-}
+**********************************************************************/
 
-/********************************************************************
-*
-*       LcdSend8BitData
-*
-* Function description:
-*   Writes a value to a display register
-*/
-static void LcdSend8BitData(U8 Data) 
+// These functions perform the actual implementation of I/O functions
+// used by the emWin middleware; see further down.
+
+//-------------------------------------------------------------------
+//
+//       LcdSendCmd
+//
+// Function description:
+//   Sets display register (i.e. send register index to display controller)
+//
+
+static void LcdSendCmd(U16 Data) 
 {
+    LBF_OLED_SendCmd( (uint8_t)(Data) );  // assuming all commands fit on 8-bit anyway
+}
+// writes one word to the controller with C/D line low (RS=0 on OLED, Command)
+
+
+
+//-------------------------------------------------------------------
+//
+//       LcdSend16BitData
+//
+// Function description:
+//   Writes a value to a display register
+//
+//
+
+static void LcdSend16BitData(U16 Data) 
+{
+ // OLED_RS assumed to be high all that time (default level) 
+
+   // Set SPI1 to 16bit frame for rgb565 transmission
+   LL_SPI_SetDataWidth( SPI1, LL_SPI_DATAWIDTH_16BIT);
+
     LBF_OLED_CS_LOW();
-    LBF_OLED_SPI_TransferByte((uint8_t)(Data));
-    LBF_OLED_CS_HIGH();
-    /* OLED_RS assumed to be high all that time (default level) */
-}
 
-/*******************************************************************
-*
-*       LcdSend8BitDataMultiple
-*
-* Function description:
-*   Writes multiple values to a display register.
-*/
-static void LcdSend8BitDataMultiple(U8 * pData, int NumItems)
+    // Transfer !
+    LBF_OLED_SPI1_16bTransferStream_DMA1Ch3( &Data, 0x1);
+
+    LBF_OLED_CS_HIGH();
+
+   // Set SPI1 back to 8bit frame
+   LL_SPI_SetDataWidth( SPI1, LL_SPI_DATAWIDTH_8BIT);
+}
+// writes one word to the controller with C/D line high (OLED RS = 1, Data/PArameter)
+
+// Note: 
+// This OLED exhibits the peculiarity of expecting either 8-bit SPI frames or 
+//  16-bit SPI frames depending on what is being accessed.
+// It normally expects 8-bit SPI frame for data/parameters, but
+// 16-bit for the DDRAM memory data access port.
+// However it appears setting OLED frame width to 16-bit works in both cases.
+// Presumably because, when the OLED expects 8 serial bits for laoding a register and gets 16, 
+// the SPI shift register ejects MSBs as new bits come in, ending up with the 8 LSBs
+// (which are the bits of interest) when the clock stops and nCS rises ?
+
+
+
+
+
+//-------------------------------------------------------------------
+//
+//       LcdSend16BitDataMultiple
+//
+// Function description:
+//  Writes multiple values to a display register.
+//
+
+static void LcdSend16BitDataMultiple(U16 * pData, int NumItems)
 {
-    LBF_OLED_CS_LOW();
-    while (NumItems--)
-    {
-    LBF_OLED_SPI_TransferByte((uint8_t) *pData++ );
-    }
-    LBF_OLED_CS_HIGH();
-    /* OLED_RS assumed to be high all that time (default level) */
-}
+ // OLED_RS assumed to be high all that time (default level) 
 
-/********************************************************************
-*
-*       LcdReadDataMultiple
-*
-* Function description:
-*   Reads multiple values from a display register.
-* NOT EXPECTED TO BE CALLED - Return 0x00 only
-* 
-*/
-static void LcdReadDataMultiple(U8 * pData, int NumItems) {
+    // Set SPI1 to 16bit frame for rgb565 transmission
+    LL_SPI_SetDataWidth( SPI1, LL_SPI_DATAWIDTH_16BIT);
+
+    LBF_OLED_CS_LOW();
+
+    // Transfer !
+    LBF_OLED_SPI1_16bTransferStream_DMA1Ch3( pData, NumItems);
+
+    LBF_OLED_CS_HIGH();
+
+   // Set SPI1 back to 8bit frame
+   LL_SPI_SetDataWidth( SPI1, LL_SPI_DATAWIDTH_8BIT);
+}
+// writes multiple words to the controller with C/D line high (OLED RS = 1)
+
+
+
+//-------------------------------------------------------------------
+//
+//       LcdReadDataMultiple
+//
+// Function description:
+//  Reads multiple values from a display register.
+// NOT EXPECTED TO BE CALLED - Return 0x00 only
+// 
+//
+
+static void LcdReadDataMultiple(U16 * pData, int NumItems) {
   while (NumItems--) {
     *pData++ = 0x00;
   }
 }
+
+
 
 /*********************************************************************
 *
@@ -221,30 +274,46 @@ void LCD_X_Config(void)
 
 
   // Required GUI_PORT_API routines :
-  // User Manual says -
+  // User Manual says (p1119, table 32.131) -
   // "The required GUI_PORT_API routines depend on the used interface. If a cache 
   // is used the routines for reading data are unnecessary for each interface."
-  // For 8-bit interface : 
-  // pfWrite8_A0 - Data Type: void (*) (U8 Data)
-  // pfWrite8_A1 - Data Type: void (*) (U8 Data)
-  // pfWriteM8_A1 -  Data Type: void (*) (U8 * pData, int NumItems)
-  // pfReadM8_A1 - Data Type: void (*) (U8 * pData, int NumItems)
-  PortAPI.pfWrite8_A0  = LcdSendCmd;
-  PortAPI.pfWrite8_A1  = LcdSend8BitData;
-  PortAPI.pfWriteM8_A1 = LcdSend8BitDataMultiple;
-  PortAPI.pfReadM8_A1  = LcdReadDataMultiple;    //no action there - Reads not supported
+  // For 16-bit interface : 
+  // > pfWrite16_A0 - Data Type: void (*) (U16 Data);
+  //	Pointer to a function which writes one word for the controller with C/D
+  //	 (command/data) line low
+  // > pfWrite16_A1 - Data Type: void (*) (U16 Data);
+  //	Ptr to a func. which writes one word with C/D high
+  // > pfWriteM16_A0 - Data Type: void (*) (U16 * pData, int NumItems);
+  //	Ptr to a func. which writes multiple words with C/D low
+  //    ...does not seem t be used with SEPS525 OLED controller
+  // > pfWriteM16_A1 - Data Type: void (*) (U16 * pData, int NumItems);
+  //	Ptr to a func. which writes multiple words with C/D high
+  // > pfRead16_A0 - Data Type: U16 (*) (void);
+  //   pfRead16_A1 - Data Type: U16 (*) (void);
+  //   pfReadM16_A1 - Data Type: vois (*) (U16 * pData, int NumItems);
+  //	Ptrs to read functions (single/multiple with RS high/low)
+  //    ...not used here as this OLED does not provide read SPI interface
+
+
+  PortAPI.pfWrite16_A0  = LcdSendCmd; 
+    
+  PortAPI.pfWrite16_A1  = LcdSend16BitData;
+  
+  PortAPI.pfWriteM16_A1 = LcdSend16BitDataMultiple;
+  
+  PortAPI.pfReadM16_A1  = LcdReadDataMultiple;   
 
 
   // Configure bus width, cache usage and hardware routines
   GUIDRV_FlexColor_SetFunc(pDevice, &PortAPI, 
                            GUIDRV_FLEXCOLOR_F66718, 
-                           GUIDRV_FLEXCOLOR_M16C0B8);
     // GUIDRV_FLEXCOLOR_F66718 is a macro that sets GUI driver to use SEPS525 
-    // GUIDRV_FLEXCOLOR_M16C1B8 selects 16bpp, cache, 8-bit bus
-    //   same without cache is: ...._M16C0B8
-
+                           GUIDRV_FLEXCOLOR_M16C0B16); 
+    // GUIDRV_FLEXCOLOR_M16C0B16 selects 16bpp, no cache, 6-bit bus
+    // other options (8-bit bus, cache...): see User Manual p1074 (pfMode parameter)
 
 }
+
 
 /*********************************************************************
 *
