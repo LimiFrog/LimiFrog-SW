@@ -44,24 +44,33 @@
 /* Exported functions ------------------------------------------------------- */
 
 
-uint8_t LBF_OLED_SPI_TransferByte (uint8_t octet);
-void LBF_OLED_SendCmd (uint8_t Value);
-void LBF_OLED_SendData (uint16_t Value);
-void LBF_OLED_WriteReg (uint8_t RegName, uint8_t RegValue);
-void LBF_OLED_DataStart (void);
-void LBF_OLED_DataEnd (void);
-
-void LBF_OLED_SetRegion(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-void LBF_OLED_Fill(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color565);
-void LBF_OLED_DisplayBuffer(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t *buffer);
-void LBF_OLED_Clear (void);
 void LBF_OLED_Switch_ON (void);
 void LBF_OLED_Switch_OFF (void);
 
-void LBF_OLED_Overwrite_CurrentLine(void);
+void LBF_OLED_Clear (void);
+
+//TO DO
+// void LBF_OLED_Brightness (tbd);
+
+void LBF_OLED_Fill(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color565);
+void LBF_OLED_Fill_XY(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color565);
+
+void LBF_OLED_DisplayBuffer(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t *pBuffer);
+void LBF_OLED_DisplayBuffer_XY(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t *pBuffer);
+
+void LBF_OLED_SendCmd (uint8_t Value);
+void LBF_OLED_WriteReg (uint8_t RegName, uint8_t RegValue);
+void LBF_OLED_SPI1_16bTransferStream_DMA1Ch3 (uint16_t* pTxBuffer, uint32_t TxLength);
+
+
+// !!! The following 4 functions actually encapsulate emWin functtions, 
+// !!! which means this middleware must have been enabled. 
+// The interest is to provide very simple printf-like means to display messages on the screen
 void LBF_OLED_PrintString(char* string);
 void LBF_OLED_PrintDec(int32_t SignedInteger);
 void LBF_OLED_PrintHex(uint16_t   Unsigned16);
+void LBF_OLED_Overwrite_CurrentLine(void);
+
 
 
 #endif  /*__LFB_OLED_LOWLEVAPI_H*/

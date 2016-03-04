@@ -1,9 +1,0 @@
-BASIC LED and SWITCH UNITARY TEST
-=================================
-
-Initialize Board
-
-Switch 2 makes LED constantly ON
-Switch 1 makes LED blinking
-
-

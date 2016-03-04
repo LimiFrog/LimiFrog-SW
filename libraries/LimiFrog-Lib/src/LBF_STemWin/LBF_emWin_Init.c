@@ -28,7 +28,7 @@ bool LBF_emWin_Init(void)
 
     // The CRC module (in RCC peripheral clock enable register) must be enabled 
     //  before using the STemWin library
-    // So periph has been enabled in stm32l1xx_hal_conf.h)
+    // It has already been enabled in stm32l4xx_hal_conf.h)
     // Also need to enable the Peripheral clock  
     __CRC_CLK_ENABLE();
     // RCC->AHBENR |= (RCC_AHBENR_CRCEN);
@@ -42,5 +42,11 @@ bool LBF_emWin_Init(void)
 }
  
 
+
+void LBF_emWin_DeInit(void) 
+{
+    // DeInit the STemWin GUI Library */
+    GUI_Exit() ;
+}
 
 /***************************************************************END OF FILE****/

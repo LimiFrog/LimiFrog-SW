@@ -10,21 +10,22 @@
  ******************************************************************************/
 
 
-
-
 #include "LBF_lowlev_API.h"
 
 
 
-/* Functions -----------------------------------------------------------------*/
+/**********
+* Function :	
+	void LBF_I2CSensors_WriteSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegVal)
+* Description :	
+	Writes the specified value  at the specified address of the sensor identified by I2C address ChipID (transactions occur over I2C bus #2, dedicated to sensors on LimiFrog).
+* Parameters :  
+	> ChipID : 7-bit I2C address of the target chip
+	> RegAdd : Address of the target register in the target chip's memory map
+	> RegVal : Register value to write
+* Return Value:  -
+**********/
 
-
-/*******************************************************************************
- * @brief  : Write a value in one register of peripheral IC using I2C protocoal.
- * @param  : RegAdd = Register Address (or name alias)
- *           RegVal: value to write.
- * @return : none.
- ******************************************************************************/
 void LBF_I2CSensors_WriteSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegVal)
 {
 
@@ -48,13 +49,21 @@ uint16_t MemAddSize = I2C_MEMADD_SIZE_8BIT;
 
 }
 
-/*******************************************************************************
- * @brief  : Write values in succesive registers of peripheral IC using I2C protocoal.
- * @param  : RegAdd = Initial Register Address (or name alias) -- autoincremented
- *           pVal: pointer to array of values to write
- *           Nb: number of successive registers to write
- * @return : none.
- ******************************************************************************/
+
+
+/************
+* Function :	
+	void LBF_I2C_Sensors_WriteMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToWrite ) 
+* Description :		
+	Write the sequence of NumByteToWrite values located in a buffer pointed by pVal into consecutive addresses starting at address RegAdd of the sensor identified by I2C address ChipID (transactions occur over I2C bus #2, dedicated to sensors on LimiFrog).
+* Parameters :  
+	> ChipID : 7-bit I2C address of the target chip
+	> RegAdd : Address of the first target register in the target chip's memory map
+	> pVal : pointer to a buffer that contains the sequence of values to write 
+	>  NumByteToWrite : number of consecutive bytes to write into the target chip
+* Return Value:  -
+*************/
+
 void  LBF_I2CSensors_WriteMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToWrite )
 {
 
@@ -78,11 +87,17 @@ uint16_t MemAddSize = I2C_MEMADD_SIZE_8BIT;
 }
 
 
-/*******************************************************************************
- * @brief  : Read a value from one register of peripheral IC using I2C protocoal.
- * @param  : RegAdd = Register Address (or name alias)
- * @return : register contents.
- ******************************************************************************/
+/**********
+* Function :	
+	void LBF_I2CSensors_ReadSingleReg (uint8_t ChipID, uint16_t RegAdd)
+* Description :	
+	Return value read from address RegAdd of the sensor identified by I2C address ChipID (transactions occur over I2C bus #2, dedicated to sensors on LimiFrog).
+* Parameters :  
+	> ChipID : 7-bit I2C address of the target chip
+	> RegAdd : Address of the target register in the target chip's memory map
+* Return Value:  the value read from the target register
+**********/
+
 uint8_t LBF_I2CSensors_ReadSingleReg (uint8_t ChipID, uint16_t RegAdd)
 {
 
@@ -109,13 +124,22 @@ uint16_t MemAddSize = I2C_MEMADD_SIZE_8BIT;
 }
 
 
-/*******************************************************************************
- * @brief  : Read values from successive registers of peripheral IC using I2C protocoal.
- * @param  : RegAdd = Initial Register Address (or name alias)
- *           pVal: pointer to array to store values read
- *           Nb: number of successive registers to read
- * @return : register contents.
- ******************************************************************************/
+
+
+
+/************
+* Function :	
+	void LBF_I2C_Sensors_ReadMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToWrite ) 
+* Description :		
+	Read the sequence of NumByteToRead values starting at address RegAdd of the sensor identified by I2C address ChipID and place them in a buffer pointed by pVal (transactions occur over I2C bus #2, dedicated to sensors on LimiFrog).
+* Parameters :  
+	> ChipID : 7-bit I2C address of the target chip
+	> RegAdd : Address of the first target register in the target chip's memory map
+	> pVal : pointer to a buffer where to store the sequence of values read back from the target chip  
+	>  NumByteToWrite : number of consecutive bytes to read from the target chip
+* Return Value:  -
+*************/
+
 void LBF_I2CSensors_ReadMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToRead )
 {
 
@@ -142,13 +166,15 @@ uint16_t MemAddSize = I2C_MEMADD_SIZE_8BIT;
 
 
 
-/*******************************************************************************
- * @brief  : Read-Modify-Write (not atomic) of one periph register using I2C2
- *           Read the value, modify relevant bits using write mask, write back.
- * @param  : RegAdd = Register Address (or name alias)
- *           RegVal: value to write.
- * @return : none.
- ******************************************************************************/
+/**********
+* Function :	
+	void 	LBF_I2C_Sensors_RmodWSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegMask, uint8_t RegUpdateVal)
+* Description :	
+	Read value RegVal from address RegAdd of the sensor identified by I2C address ChipID, overwrite bits indicated by RegMask (positions with bit set at 1 in RegMask) with corresponding bits of RegUpdateVal, and write back the result at RegAdd (transactions occur over I2C bus #2, dedicated to sensors on LimiFrog).
+* Parameters :  -
+* Return Value:  -
+***********/
+
 void LBF_I2CSensors_RmodWSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegMask, uint8_t RegUpdateVal)
 {
 

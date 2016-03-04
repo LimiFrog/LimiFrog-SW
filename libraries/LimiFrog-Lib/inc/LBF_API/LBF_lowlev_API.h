@@ -24,20 +24,21 @@
 #include "LBF_custom_types.h"
 #include "LBF_pin_aliases.h"
 #include "LBF_OnBoard_chip_aliases.h"
+
 #include "LBF_Services.h"
+
 #include "LBF_FLASH_lowlevAPI.h"
 #include "LBF_GPIO_lowlevAPI.h"
 #include "LBF_LED_Switches_lowlevAPI.h"
 #include "LBF_OLED_lowlevAPI.h"
 #include "LBF_PWR_lowlevAPI.h"
 #include "LBF_I2CSensors_lowlevAPI.h"
-#include "LBF_UART_lowlevAPI.h"
+#include "LBF_UART_BLE_lowlevAPI.h"
 #include "LBF_Timer_lowlevAPI.h"
-#include "LBF_ExtIT_lowlevAPI.h"
-#include "LBF_ADC_lowlevAPI.h"
-#include "LBF_Battery_lowlevAPI.h"
 
-#include "LBF_ExtPort_lowlevAPI.h"
+#include "LBF_EXTI_ExtPort_lowlevAPI.h"
+#include "LBF_Init_PresetConf_ExtPort.h"
+
 
 #endif /* __LBF_LOWLEV_API_H */
 

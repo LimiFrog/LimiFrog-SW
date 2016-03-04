@@ -38,19 +38,19 @@ typedef enum {
   CHANNEL3 = 3,
   CHANNEL4 = 4
 }    
-ChannelID_t;
+TimChannelID_t;
 
 
 /* Exported functions ------------------------------------------------------- */
 
-void LBF_Timer_Setup( TimerID_t TimerID, uint16_t Timer_TimeUnit_us, uint32_t Period_as_TimerUnits );
-void LBF_Timer_Start_ITout( TimerID_t TimerID );
-void LBF_Timer_Stop( TimerID_t TimerID );
+void LBF_Timer_Setup( TIM_HandleTypeDef* htim, TimerID_t TimerID, uint16_t Timer_TimeUnit_us, uint32_t Period_as_TimerUnits );
+void LBF_Timer_Start_ITout( TIM_HandleTypeDef* htim );
+void LBF_Timer_Stop( TIM_HandleTypeDef* htim );
 
-void LBF_PWMchannel_Setup ( TimerID_t TimerID, ChannelID_t ChannelID, uint32_t Pulse_as_TimerUnits );
-void LBF_PWMChannel_UpdatePulse (TimerID_t TimerID, ChannelID_t ChannelID, uint32_t  Pulse_as_TimerUnits);
-void LBF_PWMChannel_Start (TimerID_t TimerID, ChannelID_t ChannelID);
-void LBF_PWMChannel_Stop (TimerID_t TimerID, ChannelID_t ChannelID);
+void LBF_PWMchannel_Setup ( TIM_HandleTypeDef* htim, TimChannelID_t ChannelID, uint32_t Pulse_as_TimerUnits );
+void LBF_PWMchannel_UpdatePulse (TIM_HandleTypeDef* htim, TimChannelID_t ChannelID, uint32_t  Pulse_as_TimerUnits);
+void LBF_PWMchannel_Start (TIM_HandleTypeDef* htim, TimChannelID_t ChannelID);
+void LBF_PWMchannel_Stop (TIM_HandleTypeDef* htim, TimChannelID_t ChannelID);
 
 
 

@@ -22,42 +22,82 @@ static bool VDDH_On;
 
 
 
+/* =====    OLED related   =========================================*/
 
-/* Functions -----------------------------------------------------------------*/
+/************
+* Function :	bool LBF_Check_VDDH_On(void)
+* Description :	Checks whether the high voltage VDDH (13V) for the OLED display has been enabled or not.
+* Parameters :  -
+* Return Value: True if VDDH has been enabled, else false
+**************/
 
-/*******************************************************************************
- * @brief  : Check whether VDDH to OLED has been enabled on the board
- * @param  : none.
- * @return : TRUE if VDDH is on, else FALSE
- ******************************************************************************/
-bool Check_VDDH_On (void)
+bool LBF_Check_VDDH_On (void)
 {
     return VDDH_On;
 }
 
-/*******************************************************************************
- * @brief  : Enable generation of VDDH (14V) to OLED on the board 
- * @param  : none.
- * @return : none.
- ******************************************************************************/
-void Turn_VDDH_On (void)
+
+
+/****************
+Function :	void LBF_Turn_VDDH_On(void)
+Description :	Enable high voltage VDDH (13V) to  OLED display 
+Parameters :  -
+Return Value: -
+****************/
+
+void LBF_Turn_VDDH_On (void)
 {
     GPIO_HIGH(VDDH_EN_PORT, VDDH_EN_PIN);
     VDDH_On = true;
 }
 
-/*******************************************************************************
- * @brief  : Disable generation of VDDH to OLED on the board 
- * @param  : xx.
- * @return : xx.
- ******************************************************************************/
-void Turn_VDDH_Off (void)
+
+
+/****************
+Function :	void LBF_Turn_VDDH_Off(void)
+Description :	Disable high voltage VDDH (13V) to  OLED display 
+Parameters :  -
+Return Value: -
+****************/
+
+void LBF_Turn_VDDH_Off (void)
 {
     GPIO_LOW(VDDH_EN_PORT, VDDH_EN_PIN);
     VDDH_On = false;
 }
 
 
+
+/* =====    VCC_LDO related   =========================================*/
+
+
+
+/**************
+* Function :	void LBF_Enable_LDO(void)
+* Description :	Enable LDO, VCC_LDO (3.3V) available on extension port 
+* Parameters :  -
+* Return Value: -
+***************/
+
+void LBF_Enable_LDO(void)
+{
+    GPIO_HIGH( LDO_ON_PORT, LDO_ON_PIN);
+}
+
+
+
+
+/**************
+* Function :	void LBF_Disable_LDO(void)
+* Description :	Disable LDO
+* Parameters :  -
+* Return Value: -
+***************/
+
+void LBF_Disable_LDO(void)
+{
+    GPIO_LOW( LDO_ON_PORT, LDO_ON_PIN);
+}
 
 
 

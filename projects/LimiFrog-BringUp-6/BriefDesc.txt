@@ -1,9 +1,0 @@
-VL6180X (Ambient Light + Proximity / Distance Sensor) Demo
-==========================================================
-
-Initialize Board
-Check Access to VL60180X OK
-
-Continuously monitor distance to any object placed in front of VL6180X
-Display result as a colored bar of height proportional to measured distance
-

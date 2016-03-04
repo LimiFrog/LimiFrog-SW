@@ -46,14 +46,10 @@
 
 /* Exported functions --------------------------------------------------------*/
 
-/* Higher level */
 void LBF_FLASH_EraseBulk(void);
-void LBF_FLASH_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 void LBF_FLASH_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint32_t NumByteToWrite);
 void LBF_FLASH_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint32_t NumByteToRead);
 uint32_t LBF_FLASH_ReadID(void);
-
-/* Low-level */
 uint8_t LBF_FLASH_SendByte(uint8_t byte);
 void LBF_FLASH_WaitForWriteEnd(void);
 

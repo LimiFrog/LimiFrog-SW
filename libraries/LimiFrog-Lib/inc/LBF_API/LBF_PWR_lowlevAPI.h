@@ -12,17 +12,17 @@
 #include <stdint.h>        //same rationale, to use uint8_t below
 
 
-//#include "pin_aliases.h"
+// OLED VCC Control (13V)
 
-/* Exported constants --------------------------------------------------------*/
+void LBF_Turn_VDDH_On(void);
+void LBF_Turn_VDDH_Off(void);
+bool LBF_Check_VDDH_On(void);
 
 
-/* Exported functions ------------------------------------------------------- */
+// LDO VCC Control (3.3V) --  available through extension port
 
-void Turn_VDDH_On(void);
-void Turn_VDDH_Off(void);
-bool Check_VDDH_On(void);
-
+void LBF_Enable_LDO(void);
+void LBF_Disable_LDO(void);
 
 
 #endif  /*__LBF_PWR_LOWLEVAPI_H*/

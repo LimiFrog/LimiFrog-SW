@@ -1,3 +1,5 @@
+
+
 /**
   ******************************************************************************
   * @file    stm32l4xx_hal_adc.c
@@ -173,6 +175,7 @@
                                       
 #define ADC_CFGR_FIELDS_2  ((uint32_t)(ADC_CFGR_DMACFG | ADC_CFGR_AUTDLY))   /*!< ADC_CFGR fields of parameters that can be updated when no conversion
                                                                                  (neither regular nor injected) is on-going  */
+
 
 #define ADC_CFGR2_FIELDS  ((uint32_t)(ADC_CFGR2_ROVSE | ADC_CFGR2_OVSR  |\
                                        ADC_CFGR2_OVSS | ADC_CFGR2_TROVS |\
@@ -1548,7 +1551,7 @@ HAL_StatusTypeDef HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, ui
       
         /* Enable ADC DMA mode */
         SET_BIT(hadc->Instance->CFGR, ADC_CFGR_DMAEN);
-      
+
         /* Start the DMA channel */
         HAL_DMA_Start_IT(hadc->DMA_Handle, (uint32_t)&hadc->Instance->DR, (uint32_t)pData, Length);
                
@@ -2770,6 +2773,7 @@ HAL_StatusTypeDef ADC_Enable(ADC_HandleTypeDef* hadc)
   uint32_t tickstart = 0;
   
   /* ADC enable and wait for ADC ready (in case of ADC is disabled or         */
+
   /* enabling phase not yet completed: flag ADC ready not set yet).           */
   /* Timeout implemented not to be stuck if ADC cannot be enabled (possible   */
   /* causes: ADC clock not running, ...).                                     */

@@ -74,10 +74,15 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 
 
   /* Set USB Interrupt priority */
-  // Original by ST:  HAL_NVIC_SetPriority(OTG_FS_IRQn, 7, 0);
-  // Update La BlueFrog 2015 (__OTG_FS_IRQn_PRIO defined in LBF_Interrupts_Cfg.h)
+#ifdef __OTG_FS_IRQn_PRIO
+  // Update by LimiFrog : (__OTG_FS_IRQn_PRIO defined in LBF_Interrupts_Cfg.h)
   HAL_NVIC_SetPriority(OTG_FS_IRQn, __OTG_FS_IRQn_PRIO, 0);
-  
+#else
+  // Original by ST:  
+  HAL_NVIC_SetPriority(OTG_FS_IRQn, 7, 0);
+#endif
+
+
   /* Enable USB Interrupt */
   HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
 

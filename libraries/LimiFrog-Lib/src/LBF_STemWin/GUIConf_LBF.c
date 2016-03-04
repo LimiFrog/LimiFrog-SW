@@ -77,13 +77,13 @@ Purpose     : Display controller initialization
 // useful eg to avoid read from controller (SEPS525 cant do it anyway)
 // in case of XOR drawing operations w- also for speed
 // Here that's 160x128x2 = 40KB
-// But SRAM of STM32L151RC is only 32B.
+//
 // However User Manual also says (section 14.3) :
 // "If enough memory is available, the whole window fits into the 
 //  size of the Memory Device created by the WM. If not enough memory 
 // is available for the complete window in one Memory Device, the
 // WM uses 'banding' for drawing the window."
-// So should be OK...
+
 
 /*********************************************************************
 *

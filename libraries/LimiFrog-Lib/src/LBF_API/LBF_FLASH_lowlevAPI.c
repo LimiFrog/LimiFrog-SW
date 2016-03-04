@@ -16,122 +16,169 @@
 #include "LBF_SPI3_Init.h"
 
 
-// Local helper functions
-static void LBF_FLASH_SPI_Rx_DMA(	uint8_t *pRxBuffer, 
-				uint32_t TsferLength);
-static void LBF_FLASH_SPI_Tx_DMA(	uint8_t *pTxBuffer, 
-				uint32_t TsferLength);
-
-
- /* 
- *        +--------------------------------------------------------------+
- *        |                     Pin assignment                           |
- *        +-----------------------------+------------------+-------------+
- *        |  STM32 SPI Pins             | Adesto FLASH     |    Pin      |
- *        +-----------------------------+------------------+-------------+
- *        | FLASH_CS_PIN                | ChipSelect(/CS)  |    4        |
- *        | FLASH_SPI_MISO_PIN / MISO   | SerialDataOut(SO)|    8        |
- *        | (VCC)                       | WriteProtect(/WP)|    5        |
- *        |                             | GND              |    7 (0 V)  |
- *        | FLASH_SPI_MOSI_PIN / MOSI   | SerialDataIn(SI) |    1        |
- *        | FLASH_SPI_SCK_PIN / SCK     | SerialClock(SCK) |    2        |
- *        | (VCC)                       | /RESET           |    3        |
- *        |                             | VCC              |    6 (3V)   |
- *        +-----------------------------+------------------+-------------+
- * 
- ******************************************************************************/
+// Local 'helper' functions
+static void LBF_FLASH_SPI_Rx_DMA( uint8_t *pRxBuffer, uint32_t TsferLength);
+static void LBF_FLASH_SPI_Tx_DMA( uint8_t *pTxBuffer, uint32_t TsferLength);
+static void LBF_FLASH_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 
 
 
-
-/*******************************************************************************
- * @brief  : Ecrit une page en memoire (256 octets) en une seul fois.
- * @note   : le nombre d'octet ecrit ne peut pas depasser une page de FLASH.
- * @param  : pBuffer: pointeur sur le buffer contenant les donnees a ecrire en 
- *           memoire FLASH.
- * @param  : WriteAddr: addresse ou ecrire les donnees.
- * @param  : NumByteToWrite: nombre d'octet a ecrire en memoire FLASH, doit 
- *           etre egal ou inferieur a la taille d'une page de FLASH.
- * @return : Rien.
- ******************************************************************************/
-void LBF_FLASH_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+/****************
+* Function :	void LBF_FLASH_EraseBulk(void) 
+* Description :	Electrically erases the full Data Flash (this takes some time)
+* Parameters :  -
+* Return Value:  -
+****************/
+void LBF_FLASH_EraseBulk(void)
 {
-    uint16_t 	i=0;
-    uint8_t 	Buffer[LBF_FLASH_PAGE_LENGTH];
-    uint16_t    NumByteToWrite_Copy;
-    uint8_t*    pBuffer_Copy;
-    uint32_t    AddrTargetPage;
-
-
-//NOTE: What's done below is actually a Read-Modify-Write operation ,
-// ...so could rather use RMW opcode of Flash (see DS) for more optimization ?
-
-    /* Read full page and update relevant portions */
-    NumByteToWrite_Copy = NumByteToWrite;
-    pBuffer_Copy = pBuffer;
-    AddrTargetPage = (WriteAddr/LBF_FLASH_PAGE_LENGTH) * LBF_FLASH_PAGE_LENGTH;
-    LBF_FLASH_ReadBuffer(Buffer, AddrTargetPage, LBF_FLASH_PAGE_LENGTH);
-    while (NumByteToWrite_Copy--)
-    {
-       Buffer[i+(WriteAddr-AddrTargetPage)] = *pBuffer_Copy;
-       pBuffer_Copy++;
-       i++;
-    }
  
+    /* Bulk Erase */
+    /* Select the FLASH: Chip Select low */
+    LBF_FLASH_CS_LOW();
 
+    /* Send Full Flash Erase instructions  */
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE1);
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE2);
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE3);
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE4);
 
-
-     /* Select the FLASH: Chip Select low */
-    LBF_FLASH_CS_LOW();    
-
-    /* Send "Write to Memory " instruction (through Buffer1 with built-in PAGE ERASE) */
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_WRITE1);
-
-
-    /* Send WriteAddr high nibble address byte to write to */
-    LBF_FLASH_SendByte( (WriteAddr&0xFF0000)>>16);  
-    /* Send WriteAddr medium nibble address byte to write to */
-    LBF_FLASH_SendByte( (WriteAddr&0xFF00)>>8); 
-    /* Send WriteAddr low nibble address byte to write to */
-    LBF_FLASH_SendByte( WriteAddr&0xFF);  
-
-   
-    /* while there is data to be written on the FLASH */
-
-
-/*
-    while (NumByteToWrite--)
-    {
-        // Send the current byte 
-        LBF_FLASH_SendByte(*pBuffer);
-
-        // Point on the next byte to be written 
-        pBuffer++;
-    }
-*/
-// RATHER USE DMA !!! 
-    if (NumByteToWrite != 0)  // looks like FatFS may make reqs for 0-length transfers ???
-    {
-       LBF_FLASH_SPI_Tx_DMA( pBuffer, NumByteToWrite );  // DMA doesn't like 0-length transfers!
-    }
-    
     /* Deselect the FLASH: Chip Select high */
     LBF_FLASH_CS_HIGH();
     
-    /* Wait the end of Flash writing */
+    /* Wait until Flash ready */
     LBF_FLASH_WaitForWriteEnd();
 }
 
 
-/*******************************************************************************
- * @brief  : Ecrit un block de donnees en memoire. On décompose ce bloc en pages
- *           à écrire, éventuellement partiellement pour la 1ére et la dernière
- * @param  : pBuffer: pointeur sur le buffer contenant les donnees a ecrire en 
- *           memoire FLASH.
- * @param  : WriteAddr: addresse ou ecrire les donnees.
- * @param  : NumByteToWrite: nombre d'octet a ecrire en memoire FLASH.
- * @return : Rien.
- *******************************************************************************/
+
+
+/**************
+* Function :	uint32_t LBF_FLASH_ReadID(void) 
+* Description :	Returns the Unique ID read from the Data Flash
+* Parameters :  -
+* Return Value:  Unique ID of the Data Flash
+**************/
+
+uint32_t LBF_FLASH_ReadID(void)
+{
+    uint8_t Temp0 = 0, Temp1 = 0, Temp2 = 0;
+    uint32_t Temp = 0;
+    
+    /* Select the FLASH: Chip Select low */
+    LBF_FLASH_CS_LOW();
+    /* Send "RDID " instruction */
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_RDID);
+    /* Read a byte from the FLASH */
+    Temp0 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
+    /* Read a byte from the FLASH */
+    Temp1 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
+    /* Read a byte from the FLASH */
+    Temp2 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
+    /* Deselect the FLASH: Chip Select high */
+    LBF_FLASH_CS_HIGH();
+    
+    Temp = (Temp0 << 16) | (Temp1 << 8) | Temp2;
+    return Temp;
+}
+
+
+
+
+
+/************
+* Function :	
+	uint8_t LBF_FLASH_SendByte(uint8_t TxByte) 
+* Description :	
+	Transfers a byte to the Data Flash over SPI in full-duplex mode, simultaneously receive a byte from the Flash (dummy or useful depending on context)
+* Parameters :    
+	TxByte (In) : the byte to send to the Data Flash
+* Return Value:  
+	the byte received from the Flash
+************/
+
+uint8_t LBF_FLASH_SendByte(uint8_t TxByte)
+{
+
+uint8_t RxByte = 0;
+
+
+    HAL_SPI_TransmitReceive(&hspi3, &TxByte, &RxByte, 0x1, 1000);
+    // SPI3, full duplex, blocking Tx/Rx of 1 byte with 1s timeout
+    // (hspi3 is global)
+
+    
+    return RxByte;
+}
+ 
+
+
+
+/*****************
+* Function :	 
+	void LBF_FLASH_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint32_t NumByteToRead) 
+* Description :	
+	Reads from the Data Flash, starting at the adress specified by ReadAddr, the number of data bytes specified by NumByteToRead  and places them in a buffer pointer by pBuffer. 
+* Parameters :  
+	> pBuffer : pointer to the buffer for storing the data bytes read from the Data Flash
+	> ReadAddr :  First address to read in the Data Flash
+	> NumByteToRead : Number of consecutive bytes to read from the Data Flash   
+* Return Value:  -
+******************/
+
+void LBF_FLASH_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint32_t NumByteToRead)
+{
+
+   /* Select the FLASH: Chip Select low */
+    LBF_FLASH_CS_LOW();
+    
+    /* Send "Read from Memory " instruction (Continous array read, Low Frequency mode so no dummy byte after address) */
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_READ_LF);
+
+    /* Send WriteAddr high nibble address byte to read from */
+    LBF_FLASH_SendByte((ReadAddr&0xFF0000)>>16);
+
+    /* Send WriteAddr medium nibble address byte to read from */
+    LBF_FLASH_SendByte((ReadAddr&0xFF00)>>8); 
+
+
+    /* Send WriteAddr low nibble address byte to read from */
+    LBF_FLASH_SendByte(ReadAddr&0xFF);
+
+/*
+    while (NumByteToRead--)  // while there is data to be read 
+    {
+        // Read a byte from the FLASH 
+        *pBuffer = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
+        // Point to the next location where the byte read will be saved 
+        pBuffer++;
+    }
+*/
+// RATHER USE DMA !!! 
+    if (NumByteToRead != 0)  // looks like FatFS may make reqs for 0-length transfers ???
+    {
+       LBF_FLASH_SPI_Rx_DMA( pBuffer, NumByteToRead); // DMA doesn't like 0-length transfers!
+    }
+    
+
+    /* Deselect the FLASH: Chip Select high */
+    LBF_FLASH_CS_HIGH();
+}
+
+
+
+
+/*********************
+* Function :	 
+	void LBF_FLASH_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint32_t NumByteToWrite) 
+* Description :	
+	Writes into the Data Flash, starting at the specified adress, the specified number of data bytes located in the buffer specified through a pointer to its head. This involved chopping the operationinto a number of a successive page accesses.
+* Parameters : 
+	> pBuffer : pointer to the buffer that contains the data bytes to write into the Data Flash
+	> WriteAddr :  First address to write in the Data Flash
+	> NumByteToWrite : Number of consecutive bytes to write into the Data Flash  
+* Return Value:  -
+**********************/
+
 void LBF_FLASH_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint32_t NumByteToWrite)
 {
     uint16_t NumOfPages = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
@@ -139,6 +186,7 @@ void LBF_FLASH_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint32_t NumByt
     Addr = WriteAddr % LBF_FLASH_PAGE_LENGTH;
     count = LBF_FLASH_PAGE_LENGTH - Addr;
     NumOfPages =  NumByteToWrite / LBF_FLASH_PAGE_LENGTH;
+
     NumOfSingle = NumByteToWrite % LBF_FLASH_PAGE_LENGTH;
     
     if (Addr == 0) // WriteAddr is LBF_FLASH_PAGE_LENGTH aligned
@@ -203,109 +251,140 @@ void LBF_FLASH_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint32_t NumByt
     }
 }
 
-/*******************************************************************************
- * @brief  : Lit un block de donnees en memoire FLASH.
- * @param  : pBuffer: pointeur sur le buffer qui recoit les donnees a lire en 
- *           memoire FLASH.
- * @param  : ReadAddr: addresse ou les donnees sont lues.
- * @param  : NumByteToRead: nombre d'octet a lire de la memoire FLASH.
- * @return : Rien.
- ******************************************************************************/
-void LBF_FLASH_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint32_t NumByteToRead)
-{
 
-   /* Select the FLASH: Chip Select low */
+
+/***************
+* Function :	 
+	void LBF_FLASH_WaitForWriteEnd(void)
+* Description :	
+	Wait for all required writes into the Flash to be actually (physically) done.
+* Parameters :  -
+* Return Value:  -
+***************/
+
+void LBF_FLASH_WaitForWriteEnd(void)
+{
+    uint8_t flashstatus = 0;
+    
+    /* Select the FLASH: Chip Select low */
     LBF_FLASH_CS_LOW();
     
-    /* Send "Read from Memory " instruction (Continous array read, Low Frequency mode so no dummy byte after address) */
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_READ_LF);
+    /* Send "Read Status Register" instruction */
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_RDSR);
+    
+    /* Loop as long as the memory is busy  */
+    do
+    {
+        /* Send a dummy byte to generate the clock needed by the FLASH
+        and put the value of the status register in LBF_FLASH_Status variable */
+        flashstatus = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
+    }
+    while ((flashstatus & LBF_FLASH_READY_FLAG) != 0x80); /* Not ready, write still in progress */
+    
+    /* Deselect the FLASH: Chip Select high */
+    LBF_FLASH_CS_HIGH();
+}
 
-    /* Send WriteAddr high nibble address byte to read from */
-    LBF_FLASH_SendByte((ReadAddr&0xFF0000)>>16);
-
-    /* Send WriteAddr medium nibble address byte to read from */
-    LBF_FLASH_SendByte((ReadAddr&0xFF00)>>8); 
 
 
-    /* Send WriteAddr low nibble address byte to read from */
-    LBF_FLASH_SendByte(ReadAddr&0xFF);
+// ====================================================================
+// Low-level functions used only by above functions,
+// ====================================================================
+
+
+
+
+/*********************
+* Function :	 
+	void LBF_FLASH_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) 
+* Description :	
+	Writes into a page of the Data Flash, starting at the specified adress, the specified number of data bytes located in the buffer specified through a pointer to its head. As only full pages can physically be written onto the flash, this involves reading the full page, modiyfing the required portion and writing back the full page.
+* Parameters : 
+	> pBuffer : pointer to the buffer that contains the data bytes to write into the page
+	> WriteAddr :  First address to write in the Data Flash (absolute, NOT relative to the start of page)
+	> NumByteToWrite : Number of consecutive bytes to write into the Data Flash  
+* Return Value:  -
+**********************/
+static void LBF_FLASH_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
+{
+    uint16_t 	i=0;
+    uint8_t 	Buffer[LBF_FLASH_PAGE_LENGTH];
+    uint16_t    NumByteToWrite_Copy;
+    uint8_t*    pBuffer_Copy;
+    uint32_t    AddrTargetPage;
+
+
+//NOTE: What's done below is actually a Read-Modify-Write operation ,
+// ...so could rather use RMW opcode of Flash (see DS) for more optimization ?
+
+    /* Read full page and update relevant portions */
+    NumByteToWrite_Copy = NumByteToWrite;
+    pBuffer_Copy = pBuffer;
+    AddrTargetPage = (WriteAddr/LBF_FLASH_PAGE_LENGTH) * LBF_FLASH_PAGE_LENGTH;
+    LBF_FLASH_ReadBuffer(Buffer, AddrTargetPage, LBF_FLASH_PAGE_LENGTH);
+    while (NumByteToWrite_Copy--)
+    {
+       Buffer[i+(WriteAddr-AddrTargetPage)] = *pBuffer_Copy;
+       pBuffer_Copy++;
+       i++;
+    }
+ 
+
+     /* Select the FLASH: Chip Select low */
+    LBF_FLASH_CS_LOW();    
+
+    /* Send "Write to Memory " instruction (through Buffer1 with built-in PAGE ERASE) */
+    LBF_FLASH_SendByte(LBF_FLASH_CMD_WRITE1);
+
+
+    /* Send WriteAddr high nibble address byte to write to */
+    LBF_FLASH_SendByte( (WriteAddr&0xFF0000)>>16);  
+    /* Send WriteAddr medium nibble address byte to write to */
+    LBF_FLASH_SendByte( (WriteAddr&0xFF00)>>8); 
+    /* Send WriteAddr low nibble address byte to write to */
+    LBF_FLASH_SendByte( WriteAddr&0xFF);  
+
+   
+    /* while there is data to be written on the FLASH */
+
 
 /*
-    while (NumByteToRead--)  // while there is data to be read 
+    while (NumByteToWrite--)
     {
-        // Read a byte from the FLASH 
-        *pBuffer = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
-        // Point to the next location where the byte read will be saved 
+        // Send the current byte 
+        LBF_FLASH_SendByte(*pBuffer);
+
+        // Point on the next byte to be written 
         pBuffer++;
     }
 */
 // RATHER USE DMA !!! 
-    if (NumByteToRead != 0)  // looks like FatFS may make reqs for 0-length transfers ???
+    if (NumByteToWrite != 0)  // looks like FatFS may make reqs for 0-length transfers ???
     {
-       LBF_FLASH_SPI_Rx_DMA( pBuffer, NumByteToRead); // DMA doesn't like 0-length transfers!
+       LBF_FLASH_SPI_Tx_DMA( pBuffer, NumByteToWrite );  // DMA doesn't like 0-length transfers!
     }
     
-
-    /* Deselect the FLASH: Chip Select high */
-    LBF_FLASH_CS_HIGH();
-}
-
-/*******************************************************************************
- * @brief  : Lit l'identifiant de la memoire FLASH.
- * @param  : Aucun.
- * @return : Identification (ID) de la memoire FLASH.
- ******************************************************************************/
-uint32_t LBF_FLASH_ReadID(void)
-{
-    uint8_t Temp0 = 0, Temp1 = 0, Temp2 = 0;
-    uint32_t Temp = 0;
-    
-    /* Select the FLASH: Chip Select low */
-    LBF_FLASH_CS_LOW();
-    /* Send "RDID " instruction */
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_RDID);
-    /* Read a byte from the FLASH */
-    Temp0 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
-    /* Read a byte from the FLASH */
-    Temp1 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
-    /* Read a byte from the FLASH */
-    Temp2 = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
     /* Deselect the FLASH: Chip Select high */
     LBF_FLASH_CS_HIGH();
     
-    Temp = (Temp0 << 16) | (Temp1 << 8) | Temp2;
-    return Temp;
+    /* Wait the end of Flash writing */
+    LBF_FLASH_WaitForWriteEnd();
 }
 
 
-/*******************************************************************************
- * @brief  : Envoi un octet vers la Flash avec le SPI et retourne un octet lu.
- * @param  : byte: octet a envoyer.
- * @return : La valeur de l'octet recu.
- ******************************************************************************/
 
-uint8_t LBF_FLASH_SendByte(uint8_t TxByte)
-{
+/****************
+* Function :	 
+	void LBF_FLASH_SPI_Rx_DMA( uint8_t *pRxBuffer, uint32_t TsferLength )
+* Description :	
+	Receive a data stream over SPI3 from the Flash. DMA2 peripheral is supposed to have been initialized alongside SPI3 at start of program (LBF_Board_Inits), with SPI data frame at 8bits. Signals CS is not touched.
+* Parameters :  
+	> pRxBuffer (In) : pointer to a buffer containing the data to receive (bytes) 
+	> TsferLength (In) : number of bytes to transfer 
+* Return Value:  -
+***************/
 
-uint8_t RxByte = 0;
-
-    HAL_SPI_TransmitReceive(&hspi3, &TxByte, &RxByte, 0x1, 1000);
-    // SPI3, full duplex, blocking Tx/Rx of 1 byte with 1s timeout
-    // (hspi3 is global)
-    
-    return RxByte;
-}
- 
-
-
-/*******************************************************************************
- * @brief  : Receive data over SPI3 using DMA.
- * @param  : TBD
- * @return : TBD
- ******************************************************************************/
-
-
-void LBF_FLASH_SPI_Rx_DMA(	uint8_t *pRxBuffer, 
+static void LBF_FLASH_SPI_Rx_DMA(	uint8_t *pRxBuffer, 
 				uint32_t TsferLength)  
 {
 
@@ -412,13 +491,19 @@ uint8_t const DummyByte = 0x00;
 
 }
  
-/*******************************************************************************
- * @brief  : Send data over SPI3 using DMA.
- * @param  : TBD
- * @return : TBD
- ******************************************************************************/
 
-void LBF_FLASH_SPI_Tx_DMA(	uint8_t *pTxBuffer, 
+/****************
+* Function :	 
+	void LBF_FLASH_SPI_Tx_DMA( uint8_t *TRxBuffer, uint32_t TsferLength )
+* Description :	
+	Send a data stream over SPI3 to the Flash. DMA2 peripheral is supposed to have been initialized alongside SPI3 at start of program (LBF_Board_Inits), with SPI data frame at 8bits. Signals CS is not touched.
+* Parameters :  
+	> pTxBuffer (In) : pointer to a buffer containing the data to send (bytes) 
+	> TsferLength (In) : number of bytes to transfer 
+* Return Value:  -
+***************/
+
+static void LBF_FLASH_SPI_Tx_DMA( uint8_t *pTxBuffer, 
 				uint32_t TsferLength)
 {
 
@@ -521,59 +606,8 @@ void LBF_FLASH_SPI_Tx_DMA(	uint8_t *pTxBuffer,
     LL_SPI_ClearFlag_OVR(SPI3);
 
 }
- 
-/*******************************************************************************
- * @brief  : Fully erase FLASH memory.
- * @param  : Aucun.
- * @return : Rien.
- ******************************************************************************/
-void LBF_FLASH_EraseBulk(void)
-{
- 
-    /* Bulk Erase */
-    /* Select the FLASH: Chip Select low */
-    LBF_FLASH_CS_LOW();
 
-    /* Send Full Flash Erase instructions  */
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE1);
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE2);
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE3);
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_BULKERASE4);
 
-    /* Deselect the FLASH: Chip Select high */
-    LBF_FLASH_CS_HIGH();
-    
-    /* Wait until Flash ready */
-    LBF_FLASH_WaitForWriteEnd();
-}
-
-/*******************************************************************************
- * @brief  : Attend que le processus d'ecriture dans la Flash se termine.
- * @param  : Aucun.
- * @return : Rien.
- ******************************************************************************/
-void LBF_FLASH_WaitForWriteEnd(void)
-{
-    uint8_t flashstatus = 0;
-    
-    /* Select the FLASH: Chip Select low */
-    LBF_FLASH_CS_LOW();
-    
-    /* Send "Read Status Register" instruction */
-    LBF_FLASH_SendByte(LBF_FLASH_CMD_RDSR);
-    
-    /* Loop as long as the memory is busy  */
-    do
-    {
-        /* Send a dummy byte to generate the clock needed by the FLASH
-        and put the value of the status register in LBF_FLASH_Status variable */
-        flashstatus = LBF_FLASH_SendByte(LBF_FLASH_DUMMY_BYTE);
-    }
-    while ((flashstatus & LBF_FLASH_READY_FLAG) != 0x80); /* Not ready, write still in progress */
-    
-    /* Deselect the FLASH: Chip Select high */
-    LBF_FLASH_CS_HIGH();
-}
 
 
 

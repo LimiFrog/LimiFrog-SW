@@ -1,0 +1,226 @@
+/*******************************************************************************
+ * LBF_ExtPort_lowlevAPI.c
+ * 
+ * (c)2015 LimiFrog / CYMEYA
+ * This program is licensed under the terms of the MIT License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+ * Please refer to the License File LICENSE.txt located at the root of this
+ * project for full licensing conditions, 
+ * or visit https://opensource.org/licenses/MIT.
+ ******************************************************************************/
+
+
+
+
+#include "LBF_lowlev_API.h"
+
+
+/* =====    VCC_LDO related   =========================================*/
+
+#ifndef __LBF_LEGACY  // port did not exist prior to LimiFrog-0.1
+
+/*******************************************************************************
+ * @brief  : Enable LDO to get VCC_LDO on extension port 
+ * @param  : none
+ * @return : none
+ ******************************************************************************/
+void LBF_Enable_LDO()
+{
+    GPIO_HIGH( LDO_ON_PORT, LDO_ON_PIN);
+}
+
+/*******************************************************************************
+ * @brief  : Enable LDO to get VCC_LDO on extension port 
+ * @param  : none
+ * @return : none
+ ******************************************************************************/
+void LBF_Disable_LDO()
+{
+    GPIO_LOW( LDO_ON_PORT, LDO_ON_PIN);
+}
+
+#endif  //end ifndef __LBF_LEGACY
+
+
+/* =====    SPI over USART2 related   =========================================*/
+
+
+/*******************************************************************************
+ * @brief  : Using USART2 as SPI interface, send a byte and simultaneously receive 
+ *           one as per SPI specfication
+ * @param  : TxByte: byte to send
+ * @return : Byte received
+ ******************************************************************************/
+
+uint8_t LBF_SPIoverUSART2_TransferByte(uint8_t TxByte)
+{
+
+uint8_t RxByte = 0;
+
+    // Assert nCS
+    GPIO_LOW(GPIOA, GPIO_PIN_6);
+
+    // Send and Receive byte
+    HAL_USART_TransmitReceive(&husart2, &TxByte, &RxByte, 0x1, 10);
+    // USART2, full duplex, blocking Tx/Rx of 1 byte with 10ms timeout
+    // (husart2 is global)
+
+    // De-assert nCS
+    GPIO_HIGH(GPIOA, GPIO_PIN_6);
+
+
+    return RxByte;
+}
+ 
+
+
+/* =====    I2C1 related   =================================================*/
+
+
+/*******************************************************************************
+ * @brief  : Write a value in one register of peripheral IC using I2C protocoal.
+ * @param  : RegAdd = Register Address (or name alias)
+ *           RegVal: value to write.
+ * @return : none.
+ ******************************************************************************/
+void LBF_I2C1_WriteSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegVal)
+{
+
+/*****   ATTENTION   ATTENTION    ATTENTION   ATTENTION   ATTENTION   ********/
+/*****  The "7-bit device address that HAL expects is actually the    ********/
+/*****  8-bit I2C write address (i.e. shift left by one bit, pad a 0) !!! ****/
+
+    // I2C1, blocking write into 1 register with 100ms timeout
+    // (hi2c1 is global)
+    HAL_I2C_Mem_Write( &hi2c1, (uint16_t) (ChipID<<1), RegAdd,  
+                               I2C_MEMADD_SIZE_8BIT, &RegVal, 0x1, 10) ;
+
+}
+
+
+/*******************************************************************************
+ * @brief  : Write values in succesive registers of peripheral IC using I2C protocoal.
+ * @param  : RegAdd = Initial Register Address (or name alias) -- autoincremented
+ *           pVal: pointer to array of values to write
+ *           Nb: number of successive registers to write
+ * @return : none.
+ ******************************************************************************/
+void  LBF_I2C1_WriteMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToWrite )
+{
+
+    // I2C1, blocking write into 'Nb' successive registers with 100ms timeout
+    // (hi2c1 is global)
+    HAL_I2C_Mem_Write( &hi2c1, (uint16_t) (ChipID<<1), RegAdd,  
+                               I2C_MEMADD_SIZE_8BIT, pVal, NumByteToWrite, 10) ;
+  
+}
+
+
+/*******************************************************************************
+ * @brief  : Read a value from one register of peripheral IC using I2C protocoal.
+ * @param  : RegAdd = Register Address (or name alias)
+ * @return : register contents.
+ ******************************************************************************/
+uint8_t LBF_I2C1_ReadSingleReg (uint8_t ChipID, uint16_t RegAdd)
+{
+
+uint8_t RegVal = 0;
+
+    // I2C2, read 1 register in blocking mode with 1s timeout
+    // (hi2c1 is global)
+    HAL_I2C_Mem_Read( &hi2c1, (uint16_t)(ChipID<<1), RegAdd,
+                               I2C_MEMADD_SIZE_8BIT, &RegVal, 0x1, 10);
+    return RegVal;
+}
+
+
+/*******************************************************************************
+ * @brief  : Read values from successive registers of peripheral IC using I2C protocoal.
+ * @param  : RegAdd = Initial Register Address (or name alias)
+ *           pVal: pointer to array to store values read
+ *           Nb: number of successive registers to read
+ * @return : register contents.
+ ******************************************************************************/
+void LBF_I2C1_ReadMultipleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t* pVal, uint16_t NumByteToRead )
+{
+
+    // I2C2, read 1 register in blocking mode with 1s timeout
+    // (hi2c1 is global)
+    HAL_I2C_Mem_Read( &hi2c1, (uint16_t)(ChipID<<1), RegAdd,
+                               I2C_MEMADD_SIZE_8BIT, pVal, NumByteToRead, 10);
+
+}
+
+
+
+/*******************************************************************************
+ * @brief  : Read-Modify-Write (not atomic) of one periph register using I2C2
+ *           Read the value, modify relevant bits using write mask, write back.
+ * @param  : RegAdd = Register Address (or name alias)
+ *           RegVal: value to write.
+ * @return : none.
+ ******************************************************************************/
+void LBF_I2C1_RmodWSingleReg (uint8_t ChipID, uint16_t RegAdd, uint8_t RegMask, uint8_t RegUpdateVal)
+{
+
+uint8_t RegVal = 0;
+
+    // Read the register
+    HAL_I2C_Mem_Read( &hi2c1, (uint16_t)(ChipID<<1), RegAdd,
+                               I2C_MEMADD_SIZE_8BIT, &RegVal, 0x1, 10);
+
+    // Update read value according to mask and update bits
+    RegVal =  (RegVal & ~(RegMask)) | (RegUpdateVal & RegMask) ;
+
+    // Write back result
+    HAL_I2C_Mem_Write( &hi2c1, (uint16_t) (ChipID<<1), (uint16_t) RegAdd,  
+                               I2C_MEMADD_SIZE_8BIT, &RegVal, 0x1, 10) ;
+  
+}
+
+
+/* =====    UART4 related   =========================================*/
+
+
+/*******************************************************************************
+ * @brief  : UART blocking Tx of data buffer with 10ms timeout
+ * @param  : pTxBuffer: pointer to data to send, size: # of bytes to send
+ * @return : -
+ ******************************************************************************/
+
+void LBF_UART4_SendBuffer(uint8_t* pTxBuffer,  uint16_t size)
+{
+    HAL_UART_Transmit(&huart4, pTxBuffer, size, 10);
+        // (huart4 is global)
+}
+
+
+/*******************************************************************************
+ * @brief  : UART blocking Rx of data buffer with 10ms timeout
+ * @param  : pRxBuffer: pointer to storage buffer, size: # of bytes to get
+ * @return : -
+ ******************************************************************************/
+
+void LBF_UART4_ReceiveBuffer(uint8_t* pRxBuffer,  uint16_t size)
+{
+    HAL_UART_Receive(&huart4, pRxBuffer, size, 10);
+        // UART blocking Tx of 1 byte with 10ms timeout
+        // (huart4 is global)
+}
+
+//TODO  DMA transfers 
+
+
+/* =====    UART2 related   =========================================*/
+
+// TODO
+
+
+/* =====    PWM related   =========================================*/
+
+// TODO
+
+
+
+
+/***************************************************************END OF FILE****/
