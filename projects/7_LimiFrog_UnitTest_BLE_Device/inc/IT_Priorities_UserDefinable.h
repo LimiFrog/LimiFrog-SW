@@ -45,20 +45,9 @@
 #define	__EXTI9_5_IRQn_PRIO   	0xA	// includes ONOFF_STAT pin from PMIC, triggers power-on/-off
 #define	__EXTI15_10_IRQn_PRIO	0xA	
 
-// Timer Interrupts,
-// Some combined with IT from other peripherals
-#define __TIM1_UP_TIM16_IRQn_PRIO	0xA
-#define __TIM2_IRQn_PRIO	0xA
-#define __TIM3_IRQn_PRIO	0xA
-#define __TIM4_IRQn_PRIO	0xA
-#define __TIM5_IRQn_PRIO	0xA
-#define __TIM6_DAC_IRQn_PRIO	0xA
-#define __TIM7_IRQn_PRIO	0xA
-#define __TIM8_UP_IRQn_PRIO	0xA
-#define __TIM1_BRK_TIM15_IRQn_PRIO	0xA
-#define __TIM1_UP_TIM16_IRQn_PRIO	0xA
-#define __TIM1_TRG_COM_TIM17_IRQn_PRIO	0xA
 
+// IT from UART3
+#define __USART3_IRQn_PRIO	0xA
 
 #endif  /*__IT_PRIO_USERDEFINABLE_H */
 

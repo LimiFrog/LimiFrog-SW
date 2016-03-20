@@ -13,6 +13,8 @@
 
 #include "LBF_Global.h"
 
+volatile bool Rx_uart3  ;
+  // global variable shared with Interrupt Service Routine in stm32_it.c
 
 
 /*******************************************************************************
@@ -56,7 +58,7 @@ bool  Success = true;
 
     /* ... To initialize the STemWin Graphical Library              */ 
     /*     Caution: reserves some RAM - keep some for stack/heap    */
-    // Success &= LBF_emWin_Init();
+    Success &= LBF_emWin_Init();
 
     // ERROR HANDLER
     /* Replace by your own as wished */
@@ -92,24 +94,85 @@ bool  Success = true;
 char TxString[]="\nHi there !\nThis is LimiFrog.\nHow are you ?\n";
 char* pString;
 
+char RxString[256];
+uint8_t RxByte ;
+
+uint32_t i;
+
 
 
 /* ==  Body     ======================================== */
 
 
+    LBF_OLED_Switch_ON();  // DON'T FORGET #define USE_OLED in User_Configuration.h
+
+    LBF_OLED_PrintString("\nStarting...\n");
 
 
-   // Send Message();
+
+   // -- Inits     ----------------------------
+
+    i=0;
+    Rx_uart3 = false;
+
+    // Initialize IT from UART3 (UART connected to BLE module)
+    HAL_NVIC_SetPriority(USART3_IRQn, __USART3_IRQn_PRIO, 0 );
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
+
+
+   // -- Send/Receive Messages ---------------
+
+
+   // Enable Rx of 1 byte on UART3 in IT mode
+   HAL_UART_Receive_IT(&huart3, &RxByte, 0x1 );
+	    // huart3 global variable
+
+
    while(1) 
    {
        LBF_Led_ON();
+
+        // ***  Receive section:
+
+        if( Rx_uart3 )  
+	      // if new byte received (flag set in ISR of stm32_it.c)
+        {
+
+	     RxString[i++] = RxByte;
+
+             // Display String if carriage return received
+	     if ( (RxByte == '\n') )
+	     {
+		// Disable UART while displaying (which will take some time)
+		// Any subsequent chars received after \n during this time are ignored
+		// (and therefore overrun errors on UART Rx are avoided)
+		__HAL_USART_DISABLE( &huart3 );
+
+		RxString[i] = '\0'; // Add an end-of-string character for proper string display
+		LBF_OLED_PrintString("\n"); 	//skip 1 line
+		LBF_OLED_PrintString(RxString);
+		LBF_OLED_PrintString("\n");	//skip 1 line
+		i = 0;
+
+		//Enable back UART
+		__HAL_USART_ENABLE( &huart3 );
+	     }
+
+
+	    // Relaunch UART3 Rx 
+	    Rx_uart3 = false;
+            HAL_UART_Receive_IT(&huart3, &RxByte, 0x1 );
+        }
+
+
+        // ***  Transmit section:
 
         // Check if user pushes side-switch
         if ( LBF_State_Switch1_IsOn() )
         {
           LBF_Led_OFF();
 
-          // Send a test message from UART to BTLE for emission
+          // Send a text message from UART to BTLE for emission
           pString = TxString;
           LBF_UART_BLE_SendString_SwFlowControl( pString);
 

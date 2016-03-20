@@ -22,7 +22,7 @@
 
 // Comment out next line if no OLED or not used. Uncomment if OLED is used :
 
-//#define USE_OLED  
+#define USE_OLED  
 
    // WARNING:
    // this initializes OLED but powering on/off the screen is left to user 

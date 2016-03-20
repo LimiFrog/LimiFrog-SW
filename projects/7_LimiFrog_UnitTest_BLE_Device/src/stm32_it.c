@@ -12,6 +12,8 @@
 #include "LBF_Global.h"
 
 
+extern bool Rx_uart3;  // declared in main.c
+
 
 
 /* -----------------------------------------------------------------------------
@@ -246,6 +248,16 @@ void OTG_FS_IRQHandler(void)
 	HAL_PCD_IRQHandler(&hpcd);
 }
 
+/******************************************************************************
+* Function Name  : USART3_IRQHandler
+* Description    : USART3 global interrupt
+*******************************************************************************/
+void USART3_IRQHandler(void)
+{
+    HAL_UART_IRQHandler(&huart3);  
+	// checks which flag caused the IRQ, branches to relevant callback function
+        // and clear IT pending flag
+}
 
 
 
@@ -263,10 +275,10 @@ void OTG_FS_IRQHandler(void)
 /**===========================================================================*/
 
 
-// void HAL_xxxxCallback(xxxx)
-// {
-//   <your code here>
-// }
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+{
+  Rx_uart3 = true;  
+}
 
 
 

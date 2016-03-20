@@ -32,6 +32,12 @@ In particular:
    Licensing terms are available in file 00readme.txt,
    located in above directory.
 
+>> All files in directory:
+	 ./firmware_and_utilities/LimiFrog_BLE_Module
+   are executable firmware copyrighted by Dialog Semiconductor.
+   Usage terms are available in file License_BLE_Executables.txt,
+   located in above directory.
+
 >> All files in directories :
 	./projects
 	./libraries/LimiFrog-Lib

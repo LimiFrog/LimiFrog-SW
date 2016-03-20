@@ -1,0 +1,18 @@
+Executable BLE firmware -
+(c) Dialog Semiconductor :
+
+The executable firmware (.bin files provided in this directory) to be downloaded into the Panasonic PAN1740 BlueTooth low-energy module is copyrighted by Dialog Semiconductor.
+
+You are not allowed to reverse engineer, decompile, disassemble or otherwise
+attempt to reconstruct, identify or discover any source code, underlying ideas or
+algorithms embodied in the the software.
+
+You agree and understand that the software is not manufactured, designed or
+authorised for use and shall not be used, sold for use, or incorporated into modules
+for use in any medical application (including any body implantable device) or life
+support or safety equipment or any application where performance of the product
+(either by itself or in conjunction with other components) can result in personal
+injury or death (together the "Excluded Applications"). 
+
+
+
