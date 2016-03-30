@@ -93,6 +93,7 @@ FILE STRUCTURE:
 
 
 	-- /documentation
+
 		-- /LimiFrog
 		     -- Dev_Environment
 			-- LimiFrog_gcc_dev.pdf
@@ -101,8 +102,10 @@ FILE STRUCTURE:
 		   	    # Guide for connecting the ST-Link V2 programmer/debugger
 			-- LimiFrog_with_Eclipse_IDE_STM32_System_Workbench.pdf
 		   	    # Tips to use an IDE based on Eclipse + gcc + OpenOCD
-			-- Flasing_LimiFrog_over_USB.pdf
+			-- Flashing_LimiFrog_over_USB.pdf
 			    # TODO
+			-- /LimiFrog_with_Eclipse_IDE_STM32_System_Workbench
+			    # Information on using the sw package with this IDE
 		     -- Hw_and_Interfaces
 			-- Anatomy-LimiFrog.pdf
 		   	    # Identification of the main parts and controls of LimiFrog 
@@ -118,23 +121,31 @@ FILE STRUCTURE:
 		   	    # Organization of the provided software
 			-- LimiFrog_API.pdf
 		 	    # Board Support Package and Libs to get started with LimiFrog
+		     -- Known_Limitations_and_Features.pdf
+
 		-- /3rd_Party_APIs
 			-- /HAL (Cube) for STM32 On-Chip Peripherals
 			-- /FatFS_File_System_doc
 			-- /STemWin Gfx Library
 		 	    # programming interfaces for the FAT File Sysem, the STemWin
 		 	    # Gfx library and the STM32 HAL Cube peripheral drivers,
-		
 			-- /Sensors
 			    # Documentation on 3rd party sensor APIs
+
 		-- /datasheets
 		    # datasheets and user manuals of ICs used on LimiFrog
 
-	-- /btle_firmwares
+	-- /firmwares_and_utilities
+		-- /Android
+		    # example Android App for use with LimiFrog BLE
+		
+		-- /LimiFrog_BLE_module
 			-- *.bin
 			   # Executables for the BlueTooth Low-Energy module (relies 
-   			   # on an embedded Cortex-M0). Can be used to implement 
-   			   # specific 'profiles' when BTLE is enabled
+   			   # on an embedded Cortex-M0). 
+		-- /ST
+			-- stlink_udev_rule
+			   # Reference udev rules when using the ST-Link/V2 under Linux 
 
 	-- Licenses.txt
 	    # Licensing information for provided software
@@ -149,7 +160,7 @@ USAGE:
 To write an application, user may first call within main() a few board init and optional middleware initialization functions (see /PROJECT_TEMPLATE under /projects as well as examples provided). This will configures the STM32 clocks, IOs, etc. and define a number of abstraction layers to use the IC on-board. User can then write its application code, possibly relying on functions/macros defined in the provided libs and middleware provided, for easier (higher level) control of on-chip peripherals and on-board chips.
 
 See examples provided under /projects.
-The example projects provided can be simply built by "make build" and programmed into the STM32 by "make run"
+The example projects provided can be simply built by "make build" and programmed into the STM32 by "make run" (if using gcc + Makefiles with command line interface)
 
 ================================
 TOOL CHAINS:
