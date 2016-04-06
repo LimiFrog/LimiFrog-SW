@@ -87,7 +87,7 @@ uint16_t	i;
 	// Wait until data available from Accelerometer
         do 
         {
-            ReadValue = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x1E);  // Status Reg
+            ReadValue = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, LSM6DS3_XG_STATUS_REG);  // Status Reg
         } while ( (ReadValue & 0x01) != 0x01);  // bit set when new XYZ data available
 
 
@@ -99,20 +99,30 @@ uint16_t	i;
 
         // --- Read Results :------------------------------------------------
 
-	 Accel_X_LowByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x28);
-	 Accel_X_HighByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x29);
+	 Accel_X_LowByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID, LSM6DS3_XG_OUT_X_L_XL);
+	 Accel_X_HighByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID,LSM6DS3_XG_OUT_X_H_XL);
 
-	 Accel_Y_LowByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x2A);
-	 Accel_Y_HighByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x2B);   
+	 Accel_Y_LowByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID, LSM6DS3_XG_OUT_Y_L_XL);
+	 Accel_Y_HighByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID, LSM6DS3_XG_OUT_Y_H_XL);   
        
-	 Accel_Z_LowByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x2C);
-	 Accel_Z_HighByte = LBF_I2CSensors_ReadSingleReg(LSM6DS3_CHIPID, 0x2D);   
+	 Accel_Z_LowByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID, LSM6DS3_XG_OUT_Z_L_XL);
+	 Accel_Z_HighByte = LBF_I2CSensors_ReadSingleReg(
+				LSM6DS3_CHIPID, LSM6DS3_XG_OUT_Z_H_XL);   
 
 
-         Accel_X_Signed = (int16_t)( ((uint16_t)Accel_X_HighByte<<8) | (uint16_t)Accel_X_LowByte );
-         Accel_Y_Signed = (int16_t)( ((uint16_t)Accel_Y_HighByte<<8) | (uint16_t)Accel_Y_LowByte );
-         Accel_Z_Signed = (int16_t)( ((uint16_t)Accel_Z_HighByte<<8) | (uint16_t)Accel_Z_LowByte );
+         Accel_X_Signed = (int16_t)( ((uint16_t)Accel_X_HighByte<<8) |
+				 (uint16_t)Accel_X_LowByte );
 
+         Accel_Y_Signed = (int16_t)( ((uint16_t)Accel_Y_HighByte<<8) |
+				 (uint16_t)Accel_Y_LowByte );
+
+         Accel_Z_Signed = (int16_t)( ((uint16_t)Accel_Z_HighByte<<8) |
+				 (uint16_t)Accel_Z_LowByte );
 
         // --- Display Results :------------------------------------------------
 
