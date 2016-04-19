@@ -115,6 +115,13 @@ uint32_t i;
     i=0;
     Rx_uart3 = false;
 
+    // Some people reported issues to receive string of data
+    //  if not starting with a disable/enable back of UART3...
+    // Have this to be on the safe side :
+    __HAL_USART_DISABLE( &huart3 );
+    __HAL_USART_ENABLE( &huart3 );
+
+
     // Initialize IT from UART3 (UART connected to BLE module)
     HAL_NVIC_SetPriority(USART3_IRQn, __USART3_IRQn_PRIO, 0 );
     HAL_NVIC_EnableIRQ(USART3_IRQn);
