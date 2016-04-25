@@ -1,0 +1,106 @@
+<resources>
+ 
+    <string name="app_name">LimiFrog</string>
+    <string name="title_activity_device_info">DeviceInfo</string>
+    
+    <string name="service_name_1811">Service: Alert Notification Service</string>
+    <string name="service_uuid_1811">1811</string>
+
+
+    <string name="characteristic_name_2A47">Characteristic: Supported New Alert Category</string>
+    <string name="characteristic_uuid_2A47">2A47</string>
+
+
+    <string name="characteristic_name_2A46">Characteristic: New Alert</string>
+    <string name="characteristic_uuid_2A46">2A46</string>
+
+
+    <string name="characteristic_name_2A48">Characteristic: Supported Unread Alert Category</string>
+    <string name="characteristic_uuid_2A48">2A48</string>
+
+
+    <string name="characteristic_name_2A45">Characteristic: Unread Alert Status</string>
+    <string name="characteristic_uuid_2A45">2A45</string>
+
+
+    <string name="characteristic_name_2A44">Characteristic: Alert Notification Control Point</string>
+    <string name="characteristic_uuid_2A44">2A44</string>
+
+
+    <string name="service_name_180F">Service: Battery Service</string>
+    <string name="service_uuid_180F">180F</string>
+
+
+    <string name="characteristic_name_2A19">Characteristic: Battery Level</string>
+    <string name="characteristic_uuid_2A19">2A19</string>
+
+
+    <string name="service_name_180A">Service: Device Information</string>
+    <string name="service_uuid_180A">180A</string>
+
+
+    <string name="characteristic_name_2A29">Characteristic: Manufacturer Name String</string>
+    <string name="characteristic_uuid_2A29">2A29</string>
+
+
+    <string name="characteristic_name_2A24">Characteristic: Model Number String</string>
+    <string name="characteristic_uuid_2A24">2A24</string>
+
+
+    <string name="characteristic_name_2A25">Characteristic: Serial Number String</string>
+    <string name="characteristic_uuid_2A25">2A25</string>
+
+
+    <string name="characteristic_name_2A27">Characteristic: Hardware Revision String</string>
+    <string name="characteristic_uuid_2A27">2A27</string>
+
+
+    <string name="characteristic_name_2A26">Characteristic: Firmware Revision String</string>
+    <string name="characteristic_uuid_2A26">2A26</string>
+
+
+    <string name="characteristic_name_2A28">Characteristic: Software Revision String</string>
+    <string name="characteristic_uuid_2A28">2A28</string>
+
+
+    <string name="characteristic_name_2A23">Characteristic: System ID</string>
+    <string name="characteristic_uuid_2A23">2A23</string>
+
+
+    <string name="characteristic_name_2A2A">Characteristic: IEEE 11073-20601 Regulatory Certification Data List</string>
+    <string name="characteristic_uuid_2A2A">2A2A</string>
+
+
+    <string name="characteristic_name_2A50">Characteristic: PnP ID</string>
+    <string name="characteristic_uuid_2A50">2A50</string>
+
+
+    <string name="service_name_1800">Service: Generic Access</string>
+    <string name="service_uuid_1800">1800</string>
+
+
+    <string name="characteristic_name_2A00">Characteristic: Device Name</string>
+    <string name="characteristic_uuid_2A00">2A00</string>
+
+
+    <string name="characteristic_name_2A01">Characteristic: Appearance</string>
+    <string name="characteristic_uuid_2A01">2A01</string>
+
+
+    <string name="characteristic_name_2A02">Characteristic: Peripheral Privacy Flag</string>
+    <string name="characteristic_uuid_2A02">2A02</string>
+
+
+    <string name="characteristic_name_2A03">Characteristic: Reconnection Address</string>
+    <string name="characteristic_uuid_2A03">2A03</string>
+
+
+    <string name="characteristic_name_2A04">Characteristic: Peripheral Preferred Connection Parameters</string>
+    <string name="characteristic_uuid_2A04">2A04</string>
+
+
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#CEECF5</color>
+    <string name="action_settings"></string>
+	
+</resources>
