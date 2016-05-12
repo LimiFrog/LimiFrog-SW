@@ -41,7 +41,17 @@ void LBF_SysClkCfg(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
+if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) != RESET)
+{ 
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE; 
+    // dont touch LSE if outof standby mode
+}
+else 
+{ 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+}
+
+
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;

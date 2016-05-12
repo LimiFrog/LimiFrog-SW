@@ -42,7 +42,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
     // Std CMOS output, no pull_up/-down res., very low speed
     GPIO_InitStruct.Pin = BUCK3V_ON_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP; 
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pull = GPIO_PULLUP; // GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
     HAL_GPIO_Init(BUCK3V_ON_PORT, &GPIO_InitStruct) ;
 
@@ -75,6 +75,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
 /* ---------------------------------------------- */
 /* -- Init BUCK3V_ON to active state (Buck On) -- */
 /* -- Init LDO_ON to inactive state (LDO off)  -- */
+
 
     GPIO_HIGH(BUCK3V_ON_PORT, BUCK3V_ON_PIN);
 #ifndef  __LBF_LEGACY  // pin did not exist prior to LimiFrog0.1
