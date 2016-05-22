@@ -147,6 +147,10 @@ FILE STRUCTURE:
 			-- stlink_udev_rule
 			   # Reference udev rules when using the ST-Link/V2 under Linux 
 
+	-- micropython
+	    # Pointers to using MicroPython on LimiFrog. Actual MicroPython source code and
+              sample libraries are available from other repos, see information in this folder
+
 	-- Licenses.txt
 	    # Licensing information for provided software
 
