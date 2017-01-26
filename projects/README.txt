@@ -116,11 +116,16 @@ Demo_Multiple:
 	5) Proximity and Distance Detector
 	6) Pressure Sensor
 
-
-
 Demo_Extension_Port:
 	Use pins of extension port as GPIO, UART, SPI, IT, PWM, etc.	
 	Can be mostly self-checking by having external loopback.
   
+Demo_External_GPS:
+	Get GPS geolocation data from Adafruit's "Ultimate GPS" break-out board
+        (MediaTek MTK3339 based), connected to LimiFrog through its extension
+        connector.
+        Update information (latitude, longitude and some more) every few seconds, 
+        display on screen and fill .CSV log file on LimiFrog's file system.
+        File can then be opened on PC when connecting LimiFrog to USB.
 
 
